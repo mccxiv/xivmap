@@ -1,0 +1,21 @@
+{
+  "name": "xivmap",
+  "description": "Minimap for websites, a la Sublime Text. Available as jQuery or Vanilla JS.",
+  "keywords": ["minimap"],
+  "authors": [{ "name": "Andrea Stella", "email": "adr.stella@gmail.com", "homepage": "http://mccxiv.me"}],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mccxiv/xivmap.git"
+  },
+  "ignore": [
+    "/.idea",
+    "/.gitignore",
+    "/.npmignore",
+    "/index.html",
+    "/demos",
+    "/package.json",
+    "/node_modules",
+    "/gulpfile.js"
+  ],
+  "private": true
+}

@@ -1,0 +1,7 @@
+/.idea
+/.gitignore
+/demos
+/index.html
+/bower.json
+/node_modules
+/gulpfile.js

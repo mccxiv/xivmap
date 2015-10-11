@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Minimap for websites. Both as a jQuery plugin and vanilla JS.</title>
+        <style>
+            body {
+                font-family: Helvetica, sans-serif;
+                text-align: center;
+                color: #333;
+                margin: 0;
+            }
+
+            .links a {
+                text-decoration: none;
+                margin: 20px;
+                display: inline-block;
+            }
+
+            .links a:hover {
+                text-decoration: underline;
+            }
+
+            .links {
+                margin-top: 40px;
+            }
+
+            h1 {
+                font-weight: normal;
+                background-color: #F9F9F9;
+                padding: 20px;
+                margin: 0 0 20px;
+            }
+            video {
+                opacity: 0;
+                height: 600px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Xivmap is a minimap for websites, a la Sublime Text</h1>
+        <video src="demos/xivmap-demo.mp4" autoplay loop muted></video>
+        <a href="https://github.com/mccxiv/xivmap"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/a6677b08c955af8400f44c6298f40e7d19cc5b2d/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"></a>
+
+        <div class="links">
+            <a href="demos/fractal">Live demo with Fractal theme</a>
+            <a href="demos/striped">Live demo with Striped theme</a>
+
+            <a href="https://github.com/mccxiv/xivmap">Github | download & instructions</a>
+        </div>
+        <script>
+            document.querySelector('video').addEventListener('loadedmetadata', function(e) {
+                e.currentTarget.style.opacity = 1;
+            });
+        </script>
+
+    </body>
+</html>

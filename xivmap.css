@@ -1,0 +1,63 @@
+.xivmap {
+    position: fixed;
+    width: 100px;
+    right: 10px;
+    top: 20px;
+
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+    cursor: grab;
+}
+
+.xivmap:active {
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+    cursor: grabbing;
+}
+
+.xivmap [data-tag="A"],
+.xivmap [data-tag="H1"],
+.xivmap [data-tag="H2"],
+.xivmap [data-tag="H3"],
+.xivmap [data-tag="H4"],
+.xivmap [data-tag="H5"],
+.xivmap [data-tag="H6"],
+.xivmap [data-tag="INPUT"],
+.xivmap [data-tag="BUTTON"] {
+    background-color: #808080;
+}
+
+.xivmap [data-tag="Q"],
+.xivmap [data-tag="IMG"],
+.xivmap [data-tag="MAP"],
+.xivmap [data-tag="OBJECT"],
+.xivmap [data-tag="AUDIO"],
+.xivmap [data-tag="VIDEO"],
+.xivmap [data-tag="CODE"],
+.xivmap [data-tag="TEXTAREA"],
+.xivmap [data-tag="BLOCKQUOTE"],
+.xivmap [data-tag="ADDRESS"] {
+    background-color: #b9b9b9;
+}
+
+.xivmap [data-tag="UL"],
+.xivmap [data-tag="OL"],
+.xivmap [data-tag="DL"],
+.xivmap [data-tag="TABLE"],
+.xivmap [data-tag="FORM"],
+.xivmap [data-tag="P"],
+.xivmap [data-tag="PRE"] {
+    background-color: #c7c7c7;
+}
+
+.xivmap .xivmap-viewport {
+    background-color: rgba(0, 0, 0, 0.1);
+    width: calc(100% + 10px);
+    margin-left: -5px;
+    transition: margin-top 150ms ease-out;
+}
