@@ -74,7 +74,7 @@ function xivmap(config) {
 		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
 		var elements = o.content.querySelectorAll(o.selectors);
 		var expander = '<div style="height: '+o.content.offsetHeight*ratio+'px"></div>';
-		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"></div>';
+		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"><div></div></div>';
 		var html = expander;
 		for (var i = 0; i < elements.length; i++) {
 			var el = elements[i];

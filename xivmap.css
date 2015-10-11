@@ -1,7 +1,7 @@
 .xivmap {
     position: fixed;
     width: 100px;
-    right: 10px;
+    right: 20px;
     top: 20px;
 
     -moz-user-select: -moz-none;
@@ -56,8 +56,15 @@
 }
 
 .xivmap .xivmap-viewport {
-    background-color: rgba(0, 0, 0, 0.1);
-    width: calc(100% + 10px);
-    margin-left: -5px;
+    background-color: rgba(0, 0, 0, 0.15);
+    width: calc(100% + 20px);
+    margin-left: -10px;
     transition: margin-top 150ms ease-out;
+    border-radius: 2px;
+}
+
+.xivmap .xivmap-viewport > * {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.1);
 }

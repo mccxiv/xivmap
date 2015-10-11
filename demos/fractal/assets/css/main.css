@@ -3153,7 +3153,8 @@
 			}
 
 		.wrapper.style2 {
-			background-color: #fbfbfb;
+			/*background-color: #fbfbfb;*/
+            background-color: #333;
 			color: #999999;
 		}
 
