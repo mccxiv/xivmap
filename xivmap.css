@@ -1,25 +1,23 @@
-.xivmap {
-    position: fixed;
-    width: 100px;
-    right: 20px;
-    top: 20px;
+/*
+    COLORS ==========================================================
 
-    -moz-user-select: -moz-none;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
+    Xivmap creates absolutely positioned divs to represent DOM elements.
 
-    cursor: -webkit-grab;
-    cursor: -moz-grab;
-    cursor: grab;
-}
+    These divs have a data-tag attribute that corresponds to the original
+    element they represent. This allows for easy CSS styling.
 
-.xivmap:active {
-    cursor: -webkit-grabbing;
-    cursor: -moz-grabbing;
-    cursor: grabbing;
-}
+    By default, the elements are grouped into 3 colors of different
+    intensity, but feel free to modify and regroup them as necessary.
 
+    The tags *must* be uppercase, as that's how they are returned
+    by the DOM api.
+
+    Tip: don't modify this file directly, rather overwrite the rules
+    in your own CSS. This way you can download future updated versions of
+    xivmap without having to re-edit the styles.
+*/
+
+/* These are the darkest, most prominent items on the minimap */
 .xivmap [data-tag="A"],
 .xivmap [data-tag="H1"],
 .xivmap [data-tag="H2"],
@@ -32,6 +30,7 @@
     background-color: #808080;
 }
 
+/* These items have medium darkness*/
 .xivmap [data-tag="Q"],
 .xivmap [data-tag="IMG"],
 .xivmap [data-tag="MAP"],
@@ -45,6 +44,7 @@
     background-color: #b9b9b9;
 }
 
+/* These items are the lightest */
 .xivmap [data-tag="UL"],
 .xivmap [data-tag="OL"],
 .xivmap [data-tag="DL"],
@@ -55,6 +55,146 @@
     background-color: #c7c7c7;
 }
 
+
+/*
+    STRUCTURE =======================================================
+
+    The styles that follow deal with with structure and behavior.
+    Modify with care.
+*/
+
+.xivmap {
+    /* Default position and size */
+    position: fixed;
+    width: 70px;
+    margin: 20px;
+
+    top: 0;
+    right: 0;
+
+    /* Prevent accidental text selection while dragging */
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    /* Show the hand icon to indicate the viewport can be dragged */
+    cursor: move; /* IE doesn't support grab, this is a suitable replacement */
+    cursor: -webkit-grab;
+    cursor: -moz-grab;
+    cursor: grab;
+}
+
+/* Show the grabbing hand when holding down click */
+.xivmap:active {
+    cursor: move; /* IE doesn't support grabbing, this is a suitable replacement */
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+    cursor: grabbing;
+}
+
+/* When xivmap initializes, it will apply this class which starts the animation */
+.xivmap.xivmap-animate {
+    animation-delay: 500ms;
+    animation-duration: 350ms;
+}
+
+/* On some browsers, like chrome, the minimap will briefly flash before
+   it gets properly animated. This class will be applied as soon as xivmap() is
+   called, and will be removed after the animation ends */
+.xivmap.xivmap-hidden {
+    opacity: 0;
+}
+
+
+/*
+    POSITIONING =====================================================
+
+    These classes are used to place the minimap in the correct corner or side
+    Modifying them should not be necessary: use margin instead of top/left/right/bottom
+ */
+
+.xivmap.top-left {
+    top: 0;
+    left: 0;
+    right: auto;
+}
+
+.xivmap.top-right {
+    top: 0;
+    right: 0;
+}
+
+.xivmap.bottom-right {
+    right: 0;
+    bottom: 0;
+    top: auto;
+}
+
+.xivmap.bottom-left {
+    left: 0;
+    bottom: 0;
+    top: auto;
+    right: auto;
+}
+
+.xivmap.left,
+.xivmap.right {
+    /*  These margins are necessary for correct positioning,
+        Do not overwrite them */
+    margin-top: auto !important;
+    margin-bottom: auto !important;
+    top: 0;
+    bottom: 0;
+}
+
+.xivmap.left {
+    left: 0;
+    right: auto;
+}
+
+.xivmap.right {
+    right: 0;
+}
+
+/*
+    ANIMATIONS ======================================================
+
+    Xivmap comes with slide-in and fade-in animations
+    Simply apply one of the two classes to the minimap element,
+    the correct animation will run once the minimap is loaded.
+
+    You may also apply your own animations, such as those from
+    Animate.css found at https://daneden.github.io/animate.css/
+
+    Animations are triggered when xivmap applies the 'xivmap-animate'
+    class, which by default happens as soon as xivmap() is called.
+    This special class is then removed, after the animation completes.
+ */
+@keyframes xivmap-fade-in-right {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(100%, 0, 0);
+        transform: translate3d(100%, 0, 0);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
+.xivmap.slide-in.right,
+.xivmap.slide-in.top-right,
+.xivmap.slide-in.bottom-right {
+    opacity: 0;
+    animation-name: xivmap-fade-in-right;
+    animation-fill-mode: both;
+}
+
+
+/* This is the rectangle that indicates your position on the page
+   Its height will be set via JavaScript, based on window height */
 .xivmap .xivmap-viewport {
     background-color: rgba(0, 0, 0, 0.15);
     width: calc(100% + 20px);
@@ -63,8 +203,10 @@
     border-radius: 2px;
 }
 
-.xivmap .xivmap-viewport > * {
-    height: 100%;
+/* This makes the viewport box more visible on dark websites */
+.xivmap .xivmap-viewport > div {
     width: 100%;
+    height: 100%;
+    border-radius: 2px;
     background-color: rgba(255, 255, 255, 0.1);
 }

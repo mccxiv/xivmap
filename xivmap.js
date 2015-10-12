@@ -1,54 +1,50 @@
 /**
- * Appease the jQuery masses by just wrapping it in a plugin
- */
-if (jQuery) {
-	jQuery.fn.xivmap = function(config) {
-		config = config || {};
-		config.minimap = config.minimap || this.get(0);
-		return xivmap(config);
-	}
-}
-
-/**
- * Returns a list of the default selectors used to create the minimap if
- * no selectors are provided via the configuration object.
+ * Creates a minimap by populating the `config.minimap` element with generated HTML.
+ * Attaches event listeners to track viewport location and window resizing.
  *
- * @returns {string[]}
- */
-xivmap.selectors = function() {
-	return [
-		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button',
-		'q', 'img', 'map', 'object', 'audio', 'video', 'code', 'textarea',
-	    'ul', 'ol', 'dl', 'table', 'form', 'blockquote', 'address',
-	    'p', 'pre'
-	];
-};
-
-/**
- * Creates a minimap by populating the `config.minimap` element with generated HTML
- * Attached event listeners to track viewport location and window resizing.
- *
- * @param {object} config
+ * @param {object} [config]
  * @param {HTMLElement | string} config.minimap Element that will hold the minimap DOM
  * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element
  * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap
+ * @param {boolean} [config.fixedElementsAtTop=true] Draw fixed position elements at the top of the minimap, recommended.
  * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners
  */
 function xivmap(config) {
+
+	// =======================================================
+	// Variables
+	// =======================================================
+	config = config || {};
+
+	// Prevents the render function from being called too often,
+	// such as during window resize operations.
 	var debouncedRender = debounce(render, 250);
+
+	// The main config object
 	var o = {
 		minimap: toEl(config.minimap) || document.querySelector('.xivmap'),
 		content: toEl(config.content) || document.documentElement,
-		selectors: config.selectors || xivmap.selectors()
+		selectors: config.selectors || xivmap.selectors(),
+		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
 	};
 
+
+	// =======================================================
+	// Code execution
+	// =======================================================
 	render();
+	beginAnimation();
 	attachListeners();
 
 	return {
 		render: render,
 		destroy: destroy
 	};
+
+
+	// =======================================================
+	// Core functions
+	// =======================================================
 
 	function render() {
 		updateDom();
@@ -73,12 +69,13 @@ function xivmap(config) {
 	function updateDom() {
 		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
 		var elements = o.content.querySelectorAll(o.selectors);
-		var expander = '<div style="height: '+o.content.offsetHeight*ratio+'px"></div>';
+		o.minimap.style.height = o.content.offsetHeight * ratio + 'px';
 		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"><div></div></div>';
-		var html = expander;
+
+		var html = '';
 		for (var i = 0; i < elements.length; i++) {
 			var el = elements[i];
-			var pos = position(el, o.content, true);
+			var pos = position(el, o.content, o.fixedElementsAtTop);
 			var width = Math.round(el.offsetWidth * ratio);
 			var height = Math.round(el.offsetHeight * ratio);
 			var top = Math.round(pos.top * ratio);
@@ -93,16 +90,22 @@ function xivmap(config) {
 			html += '<div '+style+' '+tag+'></div>';
 		}
 		html += viewport;
+
 		o.minimap.innerHTML = html;
 	}
 
+	/**
+	 * Recalculates the size of the viewport indicator.
+	 */
 	function resizeViewport() {
 		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
-		console.log(viewport);
 		viewport.style.height = window.innerHeight * ratio + 'px';
 	}
 
+	/**
+	 * Updates the position of the viewport indicator
+	 */
 	function updateViewport() {
 		var topDistance = o.content === document.documentElement? window.pageYOffset : o.content.scrollTop;
 		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
@@ -110,10 +113,49 @@ function xivmap(config) {
 		viewport.style['margin-top'] = topDistance * ratio + 'px';
 	}
 
+	/**
+	 * Triggers the initial animation and prevents FOUC,
+	 * but only if an animation was specified through CSS.
+	 */
+	function beginAnimation() {
+		o.minimap.classList.add('xivmap-animate');
+	}
+
+	/**
+	 * Updates scroll position until the mouse button is released
+	 *
+	 * @param {MouseEvent} e
+	 */
+	function beginDragTracking(e) {
+		updateScrollPosition(e);
+		o.minimap.addEventListener('mousemove', updateScrollPosition);
+		once(window, 'mouseup', function() {
+			o.minimap.removeEventListener('mousemove', updateScrollPosition);
+		});
+	}
+
+	/**
+	 * Scrolls the page or element according to the current
+	 * cursor location in the minimap.
+	 *
+	 * @param {MouseEvent} e
+	 */
+	function updateScrollPosition(e) {
+		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
+		var distance = mouseDistanceFromTopOfTarget(e);
+		var viewport = o.minimap.querySelector('.xivmap-viewport');
+		var centeredDistance = distance - viewport.offsetHeight / 2;
+		window.scrollTo(0, centeredDistance / ratio);
+	}
+
 	function destroy() {
 		detachListeners();
 		o.minimap.innerHTML = '';
 	}
+
+	// =======================================================
+	// Helper functions
+	// =======================================================
 
 	function toEl(selector) {
 		return typeof selector === 'string'? document.querySelector(selector) : selector;
@@ -121,22 +163,6 @@ function xivmap(config) {
 
 	function mouseDistanceFromTopOfTarget(e) {
 		return e.pageY - position(e.currentTarget).top;
-	}
-
-	function beginDragTracking(e) {
-		updateScrollPosition(e);
-		o.minimap.addEventListener('mousemove', updateScrollPosition);
-		window.addEventListener('mouseup', function() {
-			o.minimap.removeEventListener('mousemove', updateScrollPosition);
-		});
-	}
-
-	function updateScrollPosition(e) {
-		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
-		var distance = mouseDistanceFromTopOfTarget(e);
-		var viewport = o.minimap.querySelector('.xivmap-viewport');
-		var centeredDistance = distance - viewport.offsetHeight / 2;
-		window.scrollTo(0, centeredDistance / ratio);
 	}
 
 	/**
@@ -184,13 +210,10 @@ function xivmap(config) {
 	 */
 	function debounce(func, wait, immediate) {
 		var timeout, args, context, timestamp, result;
-
 		var later = function() {
 			var last = Date.now() - timestamp;
-
-			if (last < wait && last >= 0) {
-				timeout = setTimeout(later, wait - last);
-			} else {
+			if (last < wait && last >= 0) timeout = setTimeout(later, wait - last);
+			else {
 				timeout = null;
 				if (!immediate) {
 					result = func.apply(context, args);
@@ -198,7 +221,6 @@ function xivmap(config) {
 				}
 			}
 		};
-
 		return function() {
 			context = this;
 			args = arguments;
@@ -209,8 +231,50 @@ function xivmap(config) {
 				result = func.apply(context, args);
 				context = args = null;
 			}
-
 			return result;
 		};
 	}
+
+	/**
+	 * Registers an event on 'node' and removes it once it fires
+	 *
+	 * @param {EventTarget | object} node
+	 * @param {string} type
+	 * @param {function} callback
+	 */
+	function once(node, type, callback) {
+		node.addEventListener(type, handler);
+		function handler() {
+			node.removeEventListener(type, handler);
+			callback.apply(this, arguments);
+		}
+	}
+}
+
+/**
+ * Returns a list of the default selectors used to create the minimap in
+ * cases where no selectors are provided via the configuration object.
+ *
+ * @returns {string[]}
+ */
+xivmap.selectors = function() {
+	return [
+		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button',
+		'q', 'img', 'map', 'object', 'audio', 'video', 'code', 'textarea',
+		'ul', 'ol', 'dl', 'table', 'form', 'blockquote', 'address',
+		'p', 'pre'
+	];
+};
+
+/**
+ * If jQuery is available, add xivmap as a plugin
+ */
+if (jQuery) {
+	jQuery.fn.xivmap = function(config) {
+		config = config || {};
+		config.minimap = config.minimap || this.get(0);
+		return xivmap(config);
+	};
+
+	jQuery.fn.xivmap.selectors = xivmap.selectors;
 }
