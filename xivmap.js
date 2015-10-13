@@ -37,7 +37,7 @@ function xivmap(config) {
 	// Code execution
 	// =======================================================
 
-	if (o.minimap)
+	if (!o.minimap) throw Error('Xivmap could not find a suitable container, please add a div with the "xivmap" class');
 
 	render();
 	attachListeners();
@@ -271,7 +271,7 @@ function xivmap(config) {
 xivmap.selectors = function() {
 	return [
 		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button',
-		'q', 'img', 'map', 'object', 'audio', 'video', 'code', 'textarea',
+		'q', 'img', 'map', 'object', 'audio', 'video', 'iframe', 'code', 'textarea',
 		'ul', 'ol', 'dl', 'table', 'form', 'blockquote', 'address',
 		'p', 'pre'
 	];

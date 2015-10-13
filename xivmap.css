@@ -37,6 +37,7 @@
 .xivmap [data-tag="OBJECT"],
 .xivmap [data-tag="AUDIO"],
 .xivmap [data-tag="VIDEO"],
+.xivmap [data-tag="IFRAME"],
 .xivmap [data-tag="CODE"],
 .xivmap [data-tag="TEXTAREA"],
 .xivmap [data-tag="BLOCKQUOTE"],
