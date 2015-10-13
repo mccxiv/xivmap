@@ -65,12 +65,11 @@
 
 .xivmap {
     /* Default position and size */
-    position: fixed;
-    width: 70px;
-    margin: 20px;
-
     top: 0;
     right: 0;
+    width: 70px;
+    margin: 20px;
+    position: fixed;
 
     /* Prevent accidental text selection while dragging */
     -moz-user-select: -moz-none;
@@ -106,6 +105,24 @@
     opacity: 0;
 }
 
+/* This is the rectangle that indicates your position on the page
+   Its height will be set via JavaScript, based on window height */
+.xivmap .xivmap-viewport {
+    margin-left: -10px;
+    border-radius: 2px;
+    width: calc(100% + 20px);
+    transition: margin-top 150ms ease-out;
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, .25);
+}
+
+/* This makes the viewport box more visible on dark websites */
+.xivmap .xivmap-viewport > div {
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
 
 /*
     POSITIONING =====================================================
@@ -140,12 +157,12 @@
 
 .xivmap.left,
 .xivmap.right {
+    top: 0;
+    bottom: 0;
     /*  These margins are necessary for correct positioning,
         Do not overwrite them */
     margin-top: auto !important;
     margin-bottom: auto !important;
-    top: 0;
-    bottom: 0;
 }
 
 .xivmap.left {
@@ -171,6 +188,25 @@
     class, which by default happens as soon as xivmap() is called.
     This special class is then removed, after the animation completes.
  */
+@keyframes xivmap-fade-in {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+
+@keyframes xivmap-fade-in-left {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+    }
+    to {
+        opacity: 1;
+        -webkit-transform: none;
+        transform: none;
+    }
+}
+
 @keyframes xivmap-fade-in-right {
     from {
         opacity: 0;
@@ -184,29 +220,43 @@
     }
 }
 
+.xivmap.fade-in {
+    opacity: 0;
+    animation-fill-mode: both;
+    animation-name: xivmap-fade-in;
+}
+
+.xivmap.slide-in.left,
+.xivmap.slide-in.top-left,
+.xivmap.slide-in.bottom-left {
+    opacity: 0;
+    animation-fill-mode: both;
+    animation-name: xivmap-fade-in-left;
+}
+
 .xivmap.slide-in.right,
 .xivmap.slide-in.top-right,
 .xivmap.slide-in.bottom-right {
     opacity: 0;
-    animation-name: xivmap-fade-in-right;
     animation-fill-mode: both;
+    animation-name: xivmap-fade-in-right;
 }
 
 
-/* This is the rectangle that indicates your position on the page
-   Its height will be set via JavaScript, based on window height */
-.xivmap .xivmap-viewport {
-    background-color: rgba(0, 0, 0, 0.15);
-    width: calc(100% + 20px);
-    margin-left: -10px;
-    transition: margin-top 150ms ease-out;
-    border-radius: 2px;
+/*
+    RESPONSIVE ======================================================
+
+    By default, smaller screens have a smaller minimaps, and tiny
+    screens under 1000px don't display a minimap at all.
+ */
+@media (max-width: 1400px) {
+    .xivmap {width: 50px;}
 }
 
-/* This makes the viewport box more visible on dark websites */
-.xivmap .xivmap-viewport > div {
-    width: 100%;
-    height: 100%;
-    border-radius: 2px;
-    background-color: rgba(255, 255, 255, 0.1);
+@media (max-width: 1100px) {
+    .xivmap {width: 30px;}
+}
+
+@media (max-width: 1000px) {
+    .xivmap {display: none;}
 }
