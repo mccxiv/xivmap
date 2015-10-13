@@ -41,7 +41,9 @@ function xivmap(config) {
 
 	render();
 	attachListeners();
-	if (config.refreshOnLoad) once(window, 'load', render);
+	if (config.refreshOnLoad && document.readyState !== 'complete') {
+		once(window, 'load', render);
+	}
 
 	return {
 		refresh: render,

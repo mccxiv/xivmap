@@ -96,14 +96,6 @@
     cursor: grabbing;
 }
 
-/* On some browsers, like chrome, the minimap will briefly flash before
-   it gets properly animated. This class will be applied as soon as xivmap() is
-   called, and will be removed after the animation ends */
-.xivmap.xivmap-hidden {
-    transition: opacity 1s linear;
-    opacity: 0;
-}
-
 /* This is the rectangle that indicates your position on the page
    Its height will be set via JavaScript, based on window height */
 .xivmap .xivmap-viewport {
