@@ -63,6 +63,10 @@
     Modify with care.
 */
 
+.xivmap * {
+    transition: none 0s !important;
+}
+
 .xivmap {
     /* Default position and size */
     top: 0;
@@ -90,12 +94,6 @@
     cursor: -webkit-grabbing;
     cursor: -moz-grabbing;
     cursor: grabbing;
-}
-
-/* When xivmap initializes, it will apply this class which starts the animation */
-.xivmap.xivmap-animate {
-    animation-delay: 500ms;
-    animation-duration: 350ms;
 }
 
 /* On some browsers, like chrome, the minimap will briefly flash before
@@ -222,24 +220,27 @@
 }
 
 .xivmap.fade-in {
-    opacity: 0;
-    animation-fill-mode: both;
+    animation-delay: 500ms;
+    animation-duration: 350ms;
+    animation-fill-mode: backwards;
     animation-name: xivmap-fade-in;
 }
 
 .xivmap.slide-in.left,
 .xivmap.slide-in.top-left,
 .xivmap.slide-in.bottom-left {
-    opacity: 0;
-    animation-fill-mode: both;
+    animation-delay: 500ms;
+    animation-duration: 350ms;
+    animation-fill-mode: backwards;
     animation-name: xivmap-fade-in-left;
 }
 
 .xivmap.slide-in.right,
 .xivmap.slide-in.top-right,
 .xivmap.slide-in.bottom-right {
-    opacity: 0;
-    animation-fill-mode: both;
+    animation-delay: 500ms;
+    animation-duration: 350ms;
+    animation-fill-mode: backwards;
     animation-name: xivmap-fade-in-right;
 }
 

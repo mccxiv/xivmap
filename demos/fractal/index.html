@@ -20,7 +20,7 @@
         <link rel="stylesheet" href="../../xivmap.css">
         <link rel="stylesheet" href="../animate.css">
 	</head>
-	<body id="top">
+	<body class="is-loading" id="top">
 
 		<!-- Header -->
         <header id="header">
@@ -457,7 +457,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
             <p class="copyright">&copy; Untitled. Credits: <a href="http://html5up.net">HTML5 UP</a></p>
         </footer>
 
-        <div class="xivmap right slide-in"></div>
+        <div class="xivmap right slide-in" style="height: 30px;"></div>
 
         <!-- Scripts -->
         <script src="assets/js/jquery.min.js"></script>
@@ -481,9 +481,8 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 
         <script src="../../xivmap.js"></script>
         <script>
-            // Wait until images have loaded,
-            // so that the map has the correct for them.
-            $(window).on('load', xivmap);
+            // That's it!
+            xivmap();
         </script>
 
     </body>

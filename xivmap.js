@@ -3,10 +3,11 @@
  * Attaches event listeners to track viewport location and window resizing.
  *
  * @param {object} [config]
- * @param {HTMLElement | string} config.minimap Element that will hold the minimap DOM
+ * @param {HTMLElement | string} [config.minimap] Element that will hold the minimap DOM, '.xivmap' by default
  * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element
  * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap
  * @param {boolean} [config.autohide=false] Only shows the minimap when hovering or scrolling.
+ * @param {boolean} [config.refreshOnLoad=true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable
  * @param {boolean} [config.fixedElementsAtTop=true] Draw fixed position elements at the top of the minimap, recommended.
  * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners
  */
@@ -27,6 +28,7 @@ function xivmap(config) {
 		content: toEl(config.content) || document.documentElement,
 		selectors: config.selectors || xivmap.selectors(),
 		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
+		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true,
 		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
 	};
 
@@ -34,12 +36,15 @@ function xivmap(config) {
 	// =======================================================
 	// Code execution
 	// =======================================================
+
+	if (o.minimap)
+
 	render();
-	beginAnimation();
 	attachListeners();
+	if (config.refreshOnLoad) once(window, 'load', render);
 
 	return {
-		render: render,
+		refresh: render,
 		destroy: destroy
 	};
 
@@ -52,6 +57,7 @@ function xivmap(config) {
 		updateDom();
 		resizeViewport();
 		updateViewport();
+		console.log('xivmap rendered');
 	}
 
 	function attachListeners() {
@@ -119,9 +125,10 @@ function xivmap(config) {
 	 * Triggers the initial animation and prevents FOUC,
 	 * but only if an animation was specified through CSS.
 	 */
-	function beginAnimation() {
+	/*function beginAnimation() {
+		console.log(getComputedStyle(o.minimap).getPropertyValue('animation-name'))
 		o.minimap.classList.add('xivmap-animate');
-	}
+	}*/
 
 	/**
 	 * Updates scroll position until the mouse button is released
