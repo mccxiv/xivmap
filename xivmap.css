@@ -102,6 +102,7 @@
    it gets properly animated. This class will be applied as soon as xivmap() is
    called, and will be removed after the animation ends */
 .xivmap.xivmap-hidden {
+    transition: opacity 1s linear;
     opacity: 0;
 }
 
@@ -257,6 +258,18 @@
     .xivmap {width: 30px;}
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 950px) {
+    .xivmap {
+        width: 15px;
+        margin: 10px;
+    }
+
+    .xivmap .xivmap-viewport {
+        margin-left: -5px;
+        width: calc(100% + 10px);
+    }
+}
+
+@media (max-width: 850px) {
     .xivmap {display: none;}
 }

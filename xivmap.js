@@ -6,6 +6,7 @@
  * @param {HTMLElement | string} config.minimap Element that will hold the minimap DOM
  * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element
  * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap
+ * @param {boolean} [config.autohide=false] Only shows the minimap when hovering or scrolling.
  * @param {boolean} [config.fixedElementsAtTop=true] Draw fixed position elements at the top of the minimap, recommended.
  * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners
  */
@@ -25,6 +26,7 @@ function xivmap(config) {
 		minimap: toEl(config.minimap) || document.querySelector('.xivmap'),
 		content: toEl(config.content) || document.documentElement,
 		selectors: config.selectors || xivmap.selectors(),
+		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
 		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
 	};
 
