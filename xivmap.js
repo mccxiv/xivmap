@@ -45,6 +45,9 @@ function xivmap(config) {
 		once(window, 'load', render);
 	}
 
+	//window.overflowing = overflowing;
+	window.isElementVisible = isElementVisible;
+
 	return {
 		refresh: render,
 		destroy: destroy
@@ -54,6 +57,8 @@ function xivmap(config) {
 	// =======================================================
 	// Core functions
 	// =======================================================
+
+
 
 	function render() {
 		updateDom();
@@ -84,24 +89,48 @@ function xivmap(config) {
 
 		var html = '';
 		for (var i = 0; i < elements.length; i++) {
-			var el = elements[i];
-			var pos = position(el, o.content, o.fixedElementsAtTop);
-			var width = Math.round(el.offsetWidth * ratio);
-			var height = Math.round(el.offsetHeight * ratio);
-			var top = Math.round(pos.top * ratio);
-			var left = Math.round(pos.left * ratio);
-			var style = 'style="' +
-				'position: absolute; ' +
-				'top: '+top+'px; ' +
-				'left: '+left+'px; ' +
-				'width: '+width+'px; ' +
-				'height: '+height+'px;"';
-			var tag = 'data-tag="'+el.tagName+'"';
-			html += '<div '+style+' '+tag+'></div>';
+			if (isElementVisible(elements[i])) {
+
+				// Used to obtain text nodes
+				var range = document.createRange();
+				range.selectNodeContents(elements[i]);
+				var rects = range.getClientRects();
+				if (rects.length) {
+					for (var j = 0; j < rects.length; j++) {
+						console.log('rect!', rects[j])
+						html += makeRectangle(rects[j], ratio, elements[i]);
+					}
+				}
+
+				else html += makeRectangle(elements[i], ratio);
+			}
 		}
 		html += viewport;
 
 		o.minimap.innerHTML = html;
+
+		/**
+		 * Returns a minimap element, ready to be used
+		 * @param {HTMLElement | ClientRect} element
+		 * @param {number} ratio
+		 * @param {HTMLElement} [originalElement] In cases where a ClientRect is passed as first argument
+		 * @returns {string} html
+		 */
+		function makeRectangle(element, ratio, originalElement) {
+			var rectangle = element.top? element : position(element);
+			var style = 'style="' +
+				'position: absolute; ' +
+				'top: ' + r(rectangle.top * ratio) + 'px; ' +
+				'left: ' + r(rectangle.left * ratio) + 'px; ' +
+				'width: ' + r(rectangle.width * ratio) + 'px; ' +
+				'height: ' + r(rectangle.height * ratio) + 'px;"';
+			var tag = 'data-tag="' + (element.tagName || originalElement.tagName) + '"';
+			return '<div '+style+' '+tag+'></div>';
+
+			function r(number) {
+				return Math.round(number);
+			}
+		}
 	}
 
 	/**
@@ -122,15 +151,6 @@ function xivmap(config) {
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
 		viewport.style['margin-top'] = topDistance * ratio + 'px';
 	}
-
-	/**
-	 * Triggers the initial animation and prevents FOUC,
-	 * but only if an animation was specified through CSS.
-	 */
-	/*function beginAnimation() {
-		console.log(getComputedStyle(o.minimap).getPropertyValue('animation-name'))
-		o.minimap.classList.add('xivmap-animate');
-	}*/
 
 	/**
 	 * Updates scroll position until the mouse button is released
@@ -176,6 +196,45 @@ function xivmap(config) {
 		return e.pageY - position(e.currentTarget).top;
 	}
 
+	function isElementVisible(element) {
+		var currentElement = element.parentElement;
+		while(currentElement) {
+			var overflow = getComputedStyle(currentElement).getPropertyValue('overflow');
+			if (overflow !== 'visible' && !isInside(element, currentElement)) return false;
+			currentElement = currentElement.parentElement;
+		}
+		return true;
+	}
+
+	function isInside(element, host) {
+		var elRect = element.getBoundingClientRect();
+		var hostRect = host.getBoundingClientRect();
+
+
+		console.log('element rect', elRect);
+		console.log('host rec', hostRect);
+
+		var elCenter = {x: 0, y: 0};
+		elCenter.y = (elRect.bottom - elRect.top) / 2 + elRect.top;
+		elCenter.x = (elRect.right - elRect.left) / 2 + elRect.left;
+
+		console.log('element center vertical', elCenter.y);
+		console.log('element center horiz', elCenter.x);
+
+		console.log(hostRect.left <= elCenter.x);
+		console.log(elCenter.x <= hostRect.right);
+		console.log(hostRect.top <= elCenter.y);
+		console.log(elCenter.y <= hostRect.bottom);
+
+		return !!(
+			hostRect.left <= elCenter.x
+			&& elCenter.x <= hostRect.right
+			&& hostRect.top <= elCenter.y
+			&& elCenter.y <= hostRect.bottom
+		);
+	}
+
+
 	/**
 	 * Get position relative to the root element
 	 * position(el)
@@ -185,30 +244,24 @@ function xivmap(config) {
 	 *
 	 * @param {HTMLElement} element
 	 * @param {HTMLElement} [ancestor]
-	 * @param {Boolean} [fixedAtTop] Fixed element positions will be reported as if they were at the top of the page
-	 * @returns {{left: number, top: number}}
+	 * @returns {{left: number, top: number, width: number, height: number}}
 	 */
-	function position(element, ancestor, fixedAtTop) {
-		fixedAtTop = typeof ancestor === 'boolean'? ancestor : fixedAtTop;
-		var pos = {left: 0, top: 0};
-		if (ancestor && typeof ancestor !== 'boolean') {
-			var thisPos = position(element, fixedAtTop);
-			var ancestorPos = position(ancestor, fixedAtTop);
+	function position(element, ancestor) {
+		var pos = {left: 0, top: 0, width: 0, height: 0};
+		if (ancestor) {
+			var thisPos = position(element);
+			var ancestorPos = position(ancestor);
 			pos.left = thisPos.left - ancestorPos.left;
 			pos.top = thisPos.top - ancestorPos.top;
+			pos.width = thisPos.width;
+			pos.height = thisPos.height;
 		}
 		else {
-			if (fixedAtTop) do {
-				// This method reports fixed elements as if they were
-				// at the top of the page... Which is desirable for the minimap.
-				pos.left += element.offsetLeft;
-				pos.top += element.offsetTop;
-			} while (element = element.offsetParent);
-			else {
-				var rect = element.getBoundingClientRect();
-				pos.top = rect.top + window.pageYOffset;
-				pos.left = rect.left + window.pageXOffset;
-			}
+			var rect = element.getBoundingClientRect();
+			pos.top = rect.top + window.pageYOffset;
+			pos.left = rect.left + window.pageXOffset;
+			pos.width = rect.width;
+			pos.height = rect.height;
 		}
 		return pos;
 	}
@@ -288,4 +341,30 @@ if (jQuery) {
 	};
 
 	jQuery.fn.xivmap.selectors = xivmap.selectors;
+}
+
+function isInside(element, host) {
+	var elRect = element.getBoundingClientRect();
+	var hostRect = host.getBoundingClientRect();
+
+
+	console.log('element rect', elRect);
+	console.log('host rec', hostRect);
+
+	var elCenter = {x: 0, y: 0};
+	elCenter.y = (elRect.bottom - elRect.top) / 2 + elRect.top;
+	elCenter.x = (elRect.right - elRect.left) / 2 + elRect.left;
+
+	console.log('element center vertical', elCenter.y);
+	console.log('element center horiz', elCenter.x);
+
+	console.log(hostRect.left <= elCenter.x);
+	console.log(elCenter.x <= hostRect.right);
+	console.log(hostRect.top <= elCenter.y);
+	console.log(elCenter.y <= hostRect.bottom);
+
+	return !!(hostRect.left <= elCenter.x
+	&& elCenter.x <= hostRect.right
+	&& hostRect.top <= elCenter.y
+	&& elCenter.y <= hostRect.bottom);
 }
