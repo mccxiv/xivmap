@@ -47,7 +47,8 @@
 .xivmap [data-tag="H5"],
 .xivmap [data-tag="H6"],
 .xivmap [data-tag="INPUT"],
-.xivmap [data-tag="BUTTON"] {
+.xivmap [data-tag="BUTTON"],
+.xivmap [data-tag="LABEL"] {
     background-color: #808080;
 }
 
@@ -67,11 +68,8 @@
 }
 
 /* These items are the lightest */
-.xivmap [data-tag="UL"],
-.xivmap [data-tag="OL"],
-.xivmap [data-tag="DL"],
-.xivmap [data-tag="TABLE"],
-.xivmap [data-tag="FORM"],
+.xivmap [data-tag="LI"],
+.xivmap [data-tag="TR"],
 .xivmap [data-tag="P"],
 .xivmap [data-tag="PRE"] {
     background-color: #c7c7c7;

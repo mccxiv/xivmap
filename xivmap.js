@@ -3,13 +3,15 @@
  * Attaches event listeners to track viewport location and window resizing.
  *
  * @param {object} [config]
- * @param {HTMLElement | string} [config.minimap] Element that will hold the minimap DOM, '.xivmap' by default
- * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element
- * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap
+ * @param {HTMLElement | string} [config.minimap] Element that will hold the minimap DOM, '.xivmap' by default.
+ * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element.
+ * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap.
+ * @param {boolean} [config.accurateText=true] Use text nodes instead of elements, makes text more detailed on the minimap.
+ * @param {boolean} [config.accurateTags] Use text nodes for these types of tags.
  * @param {boolean} [config.autohide=false] Only shows the minimap when hovering or scrolling.
- * @param {boolean} [config.refreshOnLoad=true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable
+ * @param {boolean} [config.refreshOnLoad=true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
  * @param {boolean} [config.fixedElementsAtTop=true] Draw fixed position elements at the top of the minimap, recommended.
- * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners
+ * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners.
  */
 function xivmap(config) {
 
@@ -27,6 +29,8 @@ function xivmap(config) {
 		minimap: toEl(config.minimap) || document.querySelector('.xivmap'),
 		content: toEl(config.content) || document.documentElement,
 		selectors: config.selectors || xivmap.selectors(),
+		accurateText: config.hasOwnProperty('accurateText')? config.accurateText : true,
+		accurateTags: config.accurateTags || xivmap.accurateTags(),
 		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
 		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true,
 		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
@@ -90,18 +94,18 @@ function xivmap(config) {
 		var html = '';
 		for (var i = 0; i < elements.length; i++) {
 			if (isElementVisible(elements[i])) {
-
-				// Used to obtain text nodes
-				var range = document.createRange();
-				range.selectNodeContents(elements[i]);
-				var rects = range.getClientRects();
-				if (rects.length) {
-					for (var j = 0; j < rects.length; j++) {
-						console.log('rect!', rects[j])
-						html += makeRectangle(rects[j], ratio, elements[i]);
+				if (o.accurateText && contains(o.accurateTags, elements[i].tagName)) {
+					var range = document.createRange();
+					range.selectNodeContents(elements[i]);
+					var rects = range.getClientRects();
+					if (rects.length) {
+						for (var j = 0; j < rects.length; j++) {
+							var rect = clientRectAbsolutePosition(rects[j]);
+							html += makeRectangle(rect, ratio, elements[i]);
+						}
 					}
+					else html += makeRectangle(elements[i], ratio);
 				}
-
 				else html += makeRectangle(elements[i], ratio);
 			}
 		}
@@ -117,7 +121,7 @@ function xivmap(config) {
 		 * @returns {string} html
 		 */
 		function makeRectangle(element, ratio, originalElement) {
-			var rectangle = element.top? element : position(element);
+			var rectangle = element instanceof HTMLElement? position(element) : element;
 			var style = 'style="' +
 				'position: absolute; ' +
 				'top: ' + r(rectangle.top * ratio) + 'px; ' +
@@ -188,6 +192,26 @@ function xivmap(config) {
 	// Helper functions
 	// =======================================================
 
+	function contains(array, item) {
+		return array.indexOf(item) > -1;
+	}
+
+	/**
+	 * Converts a client rectangle to one with positions
+	 * calculated from the top of the document
+	 *
+	 * @param clientRect
+	 * @returns {{top: number, left: number, width: number, height: number}}
+	 */
+	function clientRectAbsolutePosition(clientRect) {
+		return {
+			top: clientRect.top + window.pageYOffset,
+			left: clientRect.left + window.pageXOffset,
+			width: clientRect.width,
+			height: clientRect.height
+		}
+	}
+
 	function toEl(selector) {
 		return typeof selector === 'string'? document.querySelector(selector) : selector;
 	}
@@ -210,21 +234,9 @@ function xivmap(config) {
 		var elRect = element.getBoundingClientRect();
 		var hostRect = host.getBoundingClientRect();
 
-
-		console.log('element rect', elRect);
-		console.log('host rec', hostRect);
-
 		var elCenter = {x: 0, y: 0};
 		elCenter.y = (elRect.bottom - elRect.top) / 2 + elRect.top;
 		elCenter.x = (elRect.right - elRect.left) / 2 + elRect.left;
-
-		console.log('element center vertical', elCenter.y);
-		console.log('element center horiz', elCenter.x);
-
-		console.log(hostRect.left <= elCenter.x);
-		console.log(elCenter.x <= hostRect.right);
-		console.log(hostRect.top <= elCenter.y);
-		console.log(elCenter.y <= hostRect.bottom);
 
 		return !!(
 			hostRect.left <= elCenter.x
@@ -233,7 +245,6 @@ function xivmap(config) {
 			&& elCenter.y <= hostRect.bottom
 		);
 	}
-
 
 	/**
 	 * Get position relative to the root element
@@ -257,6 +268,7 @@ function xivmap(config) {
 			pos.height = thisPos.height;
 		}
 		else {
+			console.log('pos...');
 			var rect = element.getBoundingClientRect();
 			pos.top = rect.top + window.pageYOffset;
 			pos.left = rect.left + window.pageXOffset;
@@ -323,11 +335,15 @@ function xivmap(config) {
  */
 xivmap.selectors = function() {
 	return [
-		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button',
+		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button', 'label',
 		'q', 'img', 'map', 'object', 'audio', 'video', 'iframe', 'code', 'textarea',
-		'ul', 'ol', 'dl', 'table', 'form', 'blockquote', 'address',
+		'li', 'tr', 'form', 'blockquote', 'address',
 		'p', 'pre'
 	];
+};
+
+xivmap.accurateTags = function() {
+	return ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P'];
 };
 
 /**
@@ -341,30 +357,5 @@ if (jQuery) {
 	};
 
 	jQuery.fn.xivmap.selectors = xivmap.selectors;
-}
-
-function isInside(element, host) {
-	var elRect = element.getBoundingClientRect();
-	var hostRect = host.getBoundingClientRect();
-
-
-	console.log('element rect', elRect);
-	console.log('host rec', hostRect);
-
-	var elCenter = {x: 0, y: 0};
-	elCenter.y = (elRect.bottom - elRect.top) / 2 + elRect.top;
-	elCenter.x = (elRect.right - elRect.left) / 2 + elRect.left;
-
-	console.log('element center vertical', elCenter.y);
-	console.log('element center horiz', elCenter.x);
-
-	console.log(hostRect.left <= elCenter.x);
-	console.log(elCenter.x <= hostRect.right);
-	console.log(hostRect.top <= elCenter.y);
-	console.log(elCenter.y <= hostRect.bottom);
-
-	return !!(hostRect.left <= elCenter.x
-	&& elCenter.x <= hostRect.right
-	&& hostRect.top <= elCenter.y
-	&& elCenter.y <= hostRect.bottom);
+	jQuery.fn.xivmap.accurateTags = xivmap.accurateTags;
 }

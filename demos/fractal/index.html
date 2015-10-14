@@ -12,11 +12,7 @@
 		<title>Xivmap, a jQuery and Vanilla js minimap</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<!--[if lte IE 8]><script src="assets/js/ie/html5shiv.js"></script><![endif]-->
 		<link rel="stylesheet" href="assets/css/main.css" />
-		<!--[if lte IE 8]><link rel="stylesheet" href="assets/css/ie8.css" /><![endif]-->
-		<!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
-
         <link rel="stylesheet" href="../../xivmap.css">
         <link rel="stylesheet" href="../animate.css">
 	</head>
@@ -454,7 +450,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
                 <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
                 <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
             </ul>
-            <p class="copyright">&copy; Untitled. Credits: <a href="http://html5up.net">HTML5 UP</a></p>
+            <p class="copyright">Demo page by <a href="https://twitter.com/n33co">@n33co</a></p>
         </footer>
 
         <div class="xivmap right slide-in" style="height: 30px;"></div>
@@ -464,13 +460,12 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
         <script src="assets/js/jquery.scrolly.min.js"></script>
         <script src="assets/js/skel.min.js"></script>
         <script src="assets/js/util.js"></script>
-        <!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
         <script src="assets/js/main.js"></script>
 
         <script>
             var positionClasses = ['top-left', 'left', 'bottom-left', 'top-right', 'right', 'bottom-right'];
             var animationClasses = ['fade-in', 'slide-in'];
-            $('input[name="xivmap-location"], input[name="xivmap-animation"]').change(function() {
+            $('input[name="xivmap-location"], input[name="xivmap-animation"]').click(function() {
                 var positionClass = $('input[name="xivmap-location"]:checked').data('position');
                 var animationClass = $('input[name="xivmap-animation"]:checked').data('animation');
                 $('.xivmap').remove();
@@ -482,7 +477,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
         <script src="../../xivmap.js"></script>
         <script>
             // That's it!
-            var map = xivmap();
+            var map = xivmap({accurateText: true});
         </script>
 
     </body>
