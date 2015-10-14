@@ -1,24 +1,3 @@
-.xivmap-body-padding {
-    margin-right: 100px;
-}
-
-.xivmap-container {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 110px;
-    height: 100vh;
-    z-index: 100;
-    background-color: #ebebeb;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.xivmap-container .xivmap {
-    position: relative;
-}
-
 /*
     COLORS ==========================================================
 
@@ -82,10 +61,6 @@
     The styles that follow deal with with structure and behavior.
     Modify with care.
 */
-
-.xivmap * {
-    transition: none 0s !important;
-}
 
 .xivmap {
     /* Default position and size */
@@ -285,4 +260,34 @@
 
 @media (max-width: 850px) {
     .xivmap {display: none;}
+}
+
+
+/*
+    DOCKED MODE =====================================================
+
+    Apply these classes and containers to have xivmap use the
+    alternate style. The alternate style features a "docked" area
+    on the side of the page dedicated exclusively to the minimap.
+*/
+
+.xivmap-body-padding {
+    margin-right: 100px;
+}
+
+.xivmap-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 110px;
+    height: 100vh;
+    z-index: 100;
+    background-color: #ebebeb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.xivmap-container .xivmap {
+    position: relative;
 }

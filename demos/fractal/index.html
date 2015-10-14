@@ -1,12 +1,4 @@
 <!DOCTYPE HTML>
-<!--
-    Modified by Andrea Stella
-    -------------------------
-
-	Fractal by HTML5 UP
-	html5up.net | @n33co
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
 <html>
 	<head>
 		<title>Xivmap, a jQuery and Vanilla js minimap</title>
@@ -463,6 +455,7 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
         <script src="assets/js/main.js"></script>
 
         <script>
+            // This script is only for the demo
             var positionClasses = ['top-left', 'left', 'bottom-left', 'top-right', 'right', 'bottom-right'];
             var animationClasses = ['fade-in', 'slide-in'];
             $('input[name="xivmap-location"], input[name="xivmap-animation"]').click(function() {
@@ -477,7 +470,11 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
         <script src="../../xivmap.js"></script>
         <script>
             // That's it!
-            var map = xivmap({accurateText: true});
+            var map = xivmap();
+
+            // This particular page uses an animation to fade elements in on load
+            // Let's make sure that they too show up on the minimap, eventually
+            setTimeout(map.refresh, 500);
         </script>
 
     </body>

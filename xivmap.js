@@ -7,10 +7,11 @@
  * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element.
  * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap.
  * @param {boolean} [config.accurateText=true] Use text nodes instead of elements, makes text more detailed on the minimap.
- * @param {boolean} [config.accurateTags] Use text nodes for these types of tags.
- * @param {boolean} [config.autohide=false] Only shows the minimap when hovering or scrolling.
- * @param {boolean} [config.refreshOnLoad=true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
- * @param {boolean} [config.fixedElementsAtTop=true] Draw fixed position elements at the top of the minimap, recommended.
+ * @param {boolean} [config.accurateTextTags] Use text nodes for these types of tags.
+ * @param {boolean} [config.renderNoOpacity = false] Elements with opacity: 0 won't be shown on the minimap by default.
+ * @param {boolean} [config.autohide = false] Only shows the minimap when hovering or scrolling.
+ * @param {boolean} [config.refreshOnLoad = true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
+ * @param {boolean} [config.fixedElementsAtTop = true] Draw fixed position elements at the top of the minimap, recommended.
  * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners.
  */
 function xivmap(config) {
@@ -30,7 +31,8 @@ function xivmap(config) {
 		content: toEl(config.content) || document.documentElement,
 		selectors: config.selectors || xivmap.selectors(),
 		accurateText: config.hasOwnProperty('accurateText')? config.accurateText : true,
-		accurateTags: config.accurateTags || xivmap.accurateTags(),
+		accurateTextTags: config.accurateTextTags || xivmap.accurateTextTags(),
+		renderNoOpacity: config.hasOwnProperty('renderNoOpacity')? config.renderNoOpacity : false,
 		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
 		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true,
 		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
@@ -90,51 +92,17 @@ function xivmap(config) {
 		var elements = o.content.querySelectorAll(o.selectors);
 		o.minimap.style.height = o.content.offsetHeight * ratio + 'px';
 		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"><div></div></div>';
-
 		var html = '';
 		for (var i = 0; i < elements.length; i++) {
-			if (isElementVisible(elements[i])) {
-				if (o.accurateText && contains(o.accurateTags, elements[i].tagName)) {
-					var range = document.createRange();
-					range.selectNodeContents(elements[i]);
-					var rects = range.getClientRects();
-					if (rects.length) {
-						for (var j = 0; j < rects.length; j++) {
-							var rect = clientRectAbsolutePosition(rects[j]);
-							html += makeRectangle(rect, ratio, elements[i]);
-						}
-					}
-					else html += makeRectangle(elements[i], ratio);
+			if (isElementVisible(elements[i], {opacity: o.renderNoOpacity})) {
+				if (o.accurateText && contains(o.accurateTextTags, elements[i].tagName)) {
+					html += makeAccurateRectangle(elements[i], ratio);
 				}
 				else html += makeRectangle(elements[i], ratio);
 			}
 		}
 		html += viewport;
-
 		o.minimap.innerHTML = html;
-
-		/**
-		 * Returns a minimap element, ready to be used
-		 * @param {HTMLElement | ClientRect} element
-		 * @param {number} ratio
-		 * @param {HTMLElement} [originalElement] In cases where a ClientRect is passed as first argument
-		 * @returns {string} html
-		 */
-		function makeRectangle(element, ratio, originalElement) {
-			var rectangle = element instanceof HTMLElement? position(element) : element;
-			var style = 'style="' +
-				'position: absolute; ' +
-				'top: ' + r(rectangle.top * ratio) + 'px; ' +
-				'left: ' + r(rectangle.left * ratio) + 'px; ' +
-				'width: ' + r(rectangle.width * ratio) + 'px; ' +
-				'height: ' + r(rectangle.height * ratio) + 'px;"';
-			var tag = 'data-tag="' + (element.tagName || originalElement.tagName) + '"';
-			return '<div '+style+' '+tag+'></div>';
-
-			function r(number) {
-				return Math.round(number);
-			}
-		}
 	}
 
 	/**
@@ -183,6 +151,9 @@ function xivmap(config) {
 		window.scrollTo(0, centeredDistance / ratio);
 	}
 
+	/**
+	 * Clean up after itself
+	 */
 	function destroy() {
 		detachListeners();
 		o.minimap.innerHTML = '';
@@ -192,6 +163,61 @@ function xivmap(config) {
 	// Helper functions
 	// =======================================================
 
+	/**
+	 * Returns an absolutely positioned representation of an element,
+	 * ready to be used by xivmap.
+	 *
+	 * @param {HTMLElement | ClientRect} element
+	 * @param {number} ratio Decimal ratio of viewport size to minimap size
+	 * @param {HTMLElement} [originalElement] In cases where a ClientRect is passed as first argument
+	 * @returns {string} The representation of the element, as an HTML string
+	 */
+	function makeRectangle(element, ratio, originalElement) {
+		var rectangle = element instanceof HTMLElement? position(element) : element;
+		if (!rectangle.width || !rectangle.height) return '';
+		var style = 'style="' +
+			'position: absolute; ' +
+			'top: ' + r(rectangle.top * ratio) + 'px; ' +
+			'left: ' + r(rectangle.left * ratio) + 'px; ' +
+			'width: ' + r(rectangle.width * ratio) + 'px; ' +
+			'height: ' + r(rectangle.height * ratio) + 'px;"';
+		var tag = 'data-tag="' + (element.tagName || originalElement.tagName) + '"';
+		return '<div '+style+' '+tag+'></div>';
+
+		function r(number) {
+			return Math.round(number);
+		}
+	}
+
+	/**
+	 * Wrapper for makeRectangle, but potentially using text nodes
+	 *
+	 * @param {HTMLElement} element
+	 * @param {number} ratio
+	 * @returns {string}
+	 */
+	function makeAccurateRectangle(element, ratio) {
+		var html = '';
+		var range = document.createRange();
+		range.selectNodeContents(element);
+		var rects = range.getClientRects();
+		if (rects.length) {
+			for (var i = 0; i < rects.length; i++) {
+				var rect = clientRectAbsolutePosition(rects[i]);
+				html += makeRectangle(rect, ratio, element);
+			}
+			return html;
+		}
+		return makeRectangle(element, ratio);
+	}
+
+	/**
+	 * Returns true if item is in array
+	 *
+	 * @param {[]} array
+	 * @param item
+	 * @returns {boolean}
+	 */
 	function contains(array, item) {
 		return array.indexOf(item) > -1;
 	}
@@ -212,24 +238,59 @@ function xivmap(config) {
 		}
 	}
 
+	/**
+	 * Convert selector to element, if necessary
+	 *
+	 * @param {string | HTMLElement} selector
+	 * @returns {HTMLElement}
+	 */
 	function toEl(selector) {
 		return typeof selector === 'string'? document.querySelector(selector) : selector;
 	}
 
+	/**
+	 * Given a MouseEvent, returns the distance from the top of the clicked element
+	 *
+	 * @param {MouseEvent} e
+	 * @returns {number}
+	 */
 	function mouseDistanceFromTopOfTarget(e) {
 		return e.pageY - position(e.currentTarget).top;
 	}
 
-	function isElementVisible(element) {
+	/**
+	 * Calculates if an element is visible or would be visible to humans
+	 * if they scrolled to it.
+	 *
+	 * @param {HTMLElement} element
+	 * @param {object} [exceptions]
+	 * @param {boolean} [exceptions.display = false] True means "Show elements with display: none"
+	 * @param {boolean} [exceptions.visibility = false] True means "Show elements visibility: hidden"
+	 * @param {boolean} [exceptions.opacity = false] True means "Show elements with opacity: 0"
+	 * @returns {boolean}
+	 */
+	function isElementVisible(element, exceptions) {
+		exceptions = exceptions || {};
 		var currentElement = element.parentElement;
 		while(currentElement) {
-			var overflow = getComputedStyle(currentElement).getPropertyValue('overflow');
-			if (overflow !== 'visible' && !isInside(element, currentElement)) return false;
+			var styles = getComputedStyle(currentElement);
+			if (styles.getPropertyValue('overflow') !== 'visible' && !isInside(element, currentElement)) return false;
+			if (!exceptions.display && styles.getPropertyValue('display') === 'none') return false;
+			if (!exceptions.visibility && styles.getPropertyValue('visibility') === 'hidden') return false;
+			if (!exceptions.opacity && styles.getPropertyValue('opacity') === '0') return false;
 			currentElement = currentElement.parentElement;
 		}
 		return true;
 	}
 
+	/**
+	 * Returns true if element's center point is inside the box
+	 * created by host's four corners.
+	 *
+	 * @param {HTMLElement} element
+	 * @param {HTMLElement} host
+	 * @returns {boolean}
+	 */
 	function isInside(element, host) {
 		var elRect = element.getBoundingClientRect();
 		var hostRect = host.getBoundingClientRect();
@@ -342,7 +403,13 @@ xivmap.selectors = function() {
 	];
 };
 
-xivmap.accurateTags = function() {
+/**
+ * Returns a list of tags for which to use text nodes instead of the
+ * element. Using text nodes means more accurate boxes based on text length.
+ *
+ * @returns {string[]}
+ */
+xivmap.accurateTextTags = function() {
 	return ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P'];
 };
 
@@ -357,5 +424,5 @@ if (jQuery) {
 	};
 
 	jQuery.fn.xivmap.selectors = xivmap.selectors;
-	jQuery.fn.xivmap.accurateTags = xivmap.accurateTags;
+	jQuery.fn.xivmap.accurateTextTags = xivmap.accurateTextTags;
 }
