@@ -3,12 +3,13 @@
  * Attaches event listeners to track viewport location and window resizing.
  *
  * @param {object} [config]
- * @param {HTMLElement | string} [config.minimap] Element that will hold the minimap DOM, '.xivmap' by default.
- * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element.
- * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap.
+ * @param {string | HTMLElement} [config.minimap] Element that will hold the minimap DOM, '.xivmap' by default.
+ * @param {string | string[]} [config.selectors] Selectors for elements that will appear in the minimap.
+ * @param {string | HTMLElement} [config.context] Where to look for the selectors, defaults to document body.
+ * @param {HTMLElement[] | NodeList} [config.elements] Elements that will appear in the minimap, in addition to selectors.
  * @param {boolean} [config.accurateText = true] Use text nodes instead of elements, makes text more detailed on the minimap.
- * @param {boolean} [config.accurateTextTags] Use text nodes for these types of tags.
- * @param {boolean} [config.renderNoOpacity = false] Elements with opacity: 0 won't be shown on the minimap by default.
+ * @param {boolean} [config.accurateTextTags] Use text nodes for these types of tags, defaults to P and H1-H6.
+ * @param {boolean} [config.renderNoOpacity = false] Whether to show elements with opacity: 0
  * @param {boolean} [config.autohide = false] Only shows the minimap when hovering or scrolling.
  * @param {boolean} [config.autohideDelay = 1500] Hide the minimap after this many milliseconds, when autohide is enabled.
  * @param {boolean} [config.refreshOnLoad = true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
@@ -20,19 +21,23 @@ function xivmap(config) {
 	// =======================================================
 	// Variables
 	// =======================================================
+
+	// Prevent undefined errors if no argument is passed
 	config = config || {};
 
-	// Prevents the render function from being called too often,
+	// Prevent the render function from being called too often,
 	// such as during window resize operations.
-	var debouncedRender = debounce(render, 250);
+	var debouncedRender = debounce(render, 350);
 
+	// Need a variable to keep track of timeouts when using autohide
 	var autohideScrollTimer = null;
 
 	// The main config object
 	var o = {
 		minimap: toEl(config.minimap) || document.querySelector('.xivmap'),
-		content: toEl(config.content) || document.documentElement,
 		selectors: config.selectors || xivmap.selectors(),
+		context: toEl(config.context) || document.body,
+		elements: config.elements || [],
 		accurateText: config.hasOwnProperty('accurateText')? config.accurateText : true,
 		accurateTextTags: config.accurateTextTags || xivmap.accurateTextTags(),
 		renderNoOpacity: config.hasOwnProperty('renderNoOpacity')? config.renderNoOpacity : false,
@@ -54,9 +59,6 @@ function xivmap(config) {
 	if (o.refreshOnLoad) refreshOnPageLoad();
 	if (o.autohide) autohideOnLoad();
 
-	//window.overflowing = overflowing;
-	window.isElementVisible = isElementVisible;
-
 	return {
 		refresh: render,
 		destroy: destroy
@@ -74,28 +76,32 @@ function xivmap(config) {
 	}
 
 	function attachListeners() {
-		var scrollTarget = o.content === document.documentElement? window : o.content;
-		scrollTarget.addEventListener('scroll', updateViewport);
-		scrollTarget.addEventListener('resize', debouncedRender);
+		window.addEventListener('scroll', updateViewport);
+		window.addEventListener('resize', debouncedRender);
 		o.minimap.addEventListener('mousedown', beginDragTracking);
 
 		if (o.autohide) {
-			scrollTarget.addEventListener('scroll', showMomentarily);
+			window.addEventListener('scroll', showMomentarily);
 			o.minimap.addEventListener('mousemove', showMomentarily);
 		}
 	}
 
 	function detachListeners() {
-		var scrollTarget = o.content === document.documentElement? window : o.content;
-		scrollTarget.removeEventListener('scroll', updateViewport);
-		scrollTarget.removeEventListener('resize', debouncedRender);
+		window.removeEventListener('scroll', updateViewport);
+		window.removeEventListener('resize', debouncedRender);
 		o.minimap.removeEventListener('mousedown', beginDragTracking);
 	}
 
+	/**
+	 * Puts together the representation of each element
+	 * into the minimap element.
+	 */
 	function updateDom() {
-		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
-		var elements = o.content.querySelectorAll(o.selectors);
-		o.minimap.style.height = o.content.offsetHeight * ratio + 'px';
+		var ratio = o.minimap.offsetWidth / document.body.offsetWidth;
+		var elements = uniq(mergeElementLists(o.context.querySelectorAll(o.selectors), o.elements));
+		console.log('result', elements.length);
+		console.log(o.context.querySelectorAll(o.selectors).length);
+		o.minimap.style.height = document.body.offsetHeight * ratio + 'px';
 		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"><div></div></div>';
 		var html = '';
 		for (var i = 0; i < elements.length; i++) {
@@ -110,12 +116,20 @@ function xivmap(config) {
 		o.minimap.innerHTML = html;
 	}
 
+	/**
+	 * If the window's load event hasn't happened yet, then
+	 * refresh the minimap once it does.
+	 */
 	function refreshOnPageLoad() {
 		if (document.readyState !== 'complete') {
 			once(window, 'load', render);
 		}
 	}
 
+	/**
+	 * When autohide is enabled, do not hide the minimap right away.
+	 * Give it a chance to play entry animations first.
+	 */
 	function autohideOnLoad() {
 		setTimeout(function() {
 			if (!autohideScrollTimer) o.minimap.classList.add('xivmap-hidden');
@@ -124,23 +138,29 @@ function xivmap(config) {
 
 	/**
 	 * Recalculates the size of the viewport indicator.
+	 * Should probably be used when resizing the window.
 	 */
 	function resizeViewport() {
-		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
+		var ratio = o.minimap.offsetWidth / document.body.offsetWidth;
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
 		viewport.style.height = window.innerHeight * ratio + 'px';
 	}
 
 	/**
-	 * Updates the position of the viewport indicator
+	 * Updates the position of the viewport indicator.
+	 * Should probably be used when scrolling.
 	 */
 	function updateViewport() {
-		var topDistance = o.content === document.documentElement? window.pageYOffset : o.content.scrollTop;
-		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
+		var topDistance = window.pageYOffset;
+		var ratio = o.minimap.offsetWidth / document.body.offsetWidth;
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
 		viewport.style['margin-top'] = topDistance * ratio + 'px';
 	}
 
+	/**
+	 * Show the minimap for a few moments, according to autohideDelay, and
+	 * then hide it. Used by various methods when autohide is enabled.
+	 */
 	function showMomentarily() {
 		o.minimap.classList.remove('xivmap-hidden');
 		if (autohideScrollTimer) clearTimeout(autohideScrollTimer);
@@ -150,7 +170,8 @@ function xivmap(config) {
 	}
 
 	/**
-	 * Updates scroll position until the mouse button is released
+	 * Takes care of updating the window scroll position as the
+	 * user drags along the minimap.
 	 *
 	 * @param {MouseEvent} e
 	 */
@@ -169,7 +190,7 @@ function xivmap(config) {
 	 * @param {MouseEvent} e
 	 */
 	function updateScrollPosition(e) {
-		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
+		var ratio = o.minimap.offsetWidth / document.body.offsetWidth;
 		var distance = mouseDistanceFromTopOfTarget(e);
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
 		var centeredDistance = distance - viewport.offsetHeight / 2;
@@ -187,6 +208,34 @@ function xivmap(config) {
 	// =======================================================
 	// Helper functions
 	// =======================================================
+
+	/**
+	 * Combines NodeList and Element arrays
+	 *
+	 * @param {... (HTMLElement[] | NodeList)}
+	 * @returns {HTMLElement[]}
+	 */
+	function mergeElementLists() {
+		var elements = [];
+		for (var i = 0; i < arguments.length; i++) {
+			for (var j = 0; j < arguments[i].length; j++) {
+				elements.push(arguments[i][j]);
+			}
+		}
+		return elements;
+	}
+
+	/**
+	 * Returns a new array with duplicates removed
+	 *
+	 * @param {[]} a
+	 * @returns {[]}
+	 */
+	function uniq(a) {
+		return a.filter(function(value, index, self) {
+			return self.indexOf(value) === index;
+		});
+	}
 
 	/**
 	 * Returns an absolutely positioned representation of an element,
