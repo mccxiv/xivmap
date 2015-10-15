@@ -4,7 +4,7 @@ var ghPages = require('gh-pages');
 var runSequence = require('run-sequence');
 
 gulp.task('prep-files-gh-pages', function() {
-	return gulp.src(['demos/**', 'index.html', 'xivmap.css', 'xivmap.js'], {base: './'})
+	return gulp.src(['demo/**', 'index.html', 'xivmap.css', 'xivmap.js'], {base: './'})
 		.pipe(gulp.dest('.ghpages'));
 });
 
