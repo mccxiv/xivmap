@@ -1,7 +1,7 @@
 # A minimap for websites, a la Sublime Text
 ###### Xivmap comes both as a jQuery Plugin and as plain JS, using the same file.
 
-[![](demos/xivmap-demo.gif)](http://mccxiv.github.io/xivmap/)
+[![](demo/xivmap-demo.gif)](http://mccxiv.github.io/xivmap/)
 
 [Click for live demos](http://mccxiv.github.io/xivmap/)
 
