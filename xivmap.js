@@ -6,13 +6,14 @@
  * @param {HTMLElement | string} [config.minimap] Element that will hold the minimap DOM, '.xivmap' by default.
  * @param {HTMLElement | string} [config.content] Element whose content will appear in the minimap, defaults to root element.
  * @param {string | string[]} [config.selectors] Selectors for which elements will appear in the minimap.
- * @param {boolean} [config.accurateText=true] Use text nodes instead of elements, makes text more detailed on the minimap.
+ * @param {boolean} [config.accurateText = true] Use text nodes instead of elements, makes text more detailed on the minimap.
  * @param {boolean} [config.accurateTextTags] Use text nodes for these types of tags.
  * @param {boolean} [config.renderNoOpacity = false] Elements with opacity: 0 won't be shown on the minimap by default.
  * @param {boolean} [config.autohide = false] Only shows the minimap when hovering or scrolling.
+ * @param {boolean} [config.autohideDelay = 1500] Hide the minimap after this many milliseconds, when autohide is enabled.
  * @param {boolean} [config.refreshOnLoad = true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
  * @param {boolean} [config.fixedElementsAtTop = true] Draw fixed position elements at the top of the minimap, recommended.
- * @returns {{render: function, destroy: function}} Methods to force a re-render and to clean up listeners.
+ * @returns {{refresh: function, destroy: function}} Methods to force a re-render and to clean up listeners.
  */
 function xivmap(config) {
 
@@ -25,6 +26,8 @@ function xivmap(config) {
 	// such as during window resize operations.
 	var debouncedRender = debounce(render, 250);
 
+	var autohideScrollTimer = null;
+
 	// The main config object
 	var o = {
 		minimap: toEl(config.minimap) || document.querySelector('.xivmap'),
@@ -34,6 +37,7 @@ function xivmap(config) {
 		accurateTextTags: config.accurateTextTags || xivmap.accurateTextTags(),
 		renderNoOpacity: config.hasOwnProperty('renderNoOpacity')? config.renderNoOpacity : false,
 		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
+		autohideDelay: config.hasOwnProperty('autohideDelay')? config.autohideDelay : 1500,
 		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true,
 		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
 	};
@@ -47,9 +51,8 @@ function xivmap(config) {
 
 	render();
 	attachListeners();
-	if (config.refreshOnLoad && document.readyState !== 'complete') {
-		once(window, 'load', render);
-	}
+	if (o.refreshOnLoad) refreshOnPageLoad();
+	if (o.autohide) autohideOnLoad();
 
 	//window.overflowing = overflowing;
 	window.isElementVisible = isElementVisible;
@@ -64,13 +67,10 @@ function xivmap(config) {
 	// Core functions
 	// =======================================================
 
-
-
 	function render() {
 		updateDom();
 		resizeViewport();
 		updateViewport();
-		console.log('xivmap rendered');
 	}
 
 	function attachListeners() {
@@ -78,6 +78,11 @@ function xivmap(config) {
 		scrollTarget.addEventListener('scroll', updateViewport);
 		scrollTarget.addEventListener('resize', debouncedRender);
 		o.minimap.addEventListener('mousedown', beginDragTracking);
+
+		if (o.autohide) {
+			scrollTarget.addEventListener('scroll', showMomentarily);
+			o.minimap.addEventListener('mousemove', showMomentarily);
+		}
 	}
 
 	function detachListeners() {
@@ -105,6 +110,18 @@ function xivmap(config) {
 		o.minimap.innerHTML = html;
 	}
 
+	function refreshOnPageLoad() {
+		if (document.readyState !== 'complete') {
+			once(window, 'load', render);
+		}
+	}
+
+	function autohideOnLoad() {
+		setTimeout(function() {
+			if (!autohideScrollTimer) o.minimap.classList.add('xivmap-hidden');
+		}, o.autohideDelay);
+	}
+
 	/**
 	 * Recalculates the size of the viewport indicator.
 	 */
@@ -122,6 +139,14 @@ function xivmap(config) {
 		var ratio = o.minimap.offsetWidth / o.content.offsetWidth;
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
 		viewport.style['margin-top'] = topDistance * ratio + 'px';
+	}
+
+	function showMomentarily() {
+		o.minimap.classList.remove('xivmap-hidden');
+		if (autohideScrollTimer) clearTimeout(autohideScrollTimer);
+		autohideScrollTimer = setTimeout(function() {
+			o.minimap.classList.add('xivmap-hidden');
+		}, o.autohideDelay);
 	}
 
 	/**
@@ -329,7 +354,6 @@ function xivmap(config) {
 			pos.height = thisPos.height;
 		}
 		else {
-			console.log('pos...');
 			var rect = element.getBoundingClientRect();
 			pos.top = rect.top + window.pageYOffset;
 			pos.left = rect.left + window.pageXOffset;
@@ -399,7 +423,7 @@ xivmap.selectors = function() {
 		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button', 'label',
 		'q', 'img', 'map', 'object', 'audio', 'video', 'iframe', 'code', 'textarea',
 		'li', 'tr', 'form', 'blockquote', 'address',
-		'p', 'pre'
+		'p', 'pre', '.include-in-xivmap'
 	];
 };
 

@@ -5,8 +5,9 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="assets/css/main.css" />
-        <link rel="stylesheet" href="../../xivmap.css">
-        <link rel="stylesheet" href="../animate.css">
+        <link rel="stylesheet" href="../xivmap.css">
+        <link rel="stylesheet" href="../xivmap-docked.css"> <!-- This one's optional :) -->
+        <link rel="stylesheet" href="animate.css">
 	</head>
 	<body class="is-loading" id="top">
 
@@ -17,6 +18,23 @@
                 <p>A modern minimap for your site<br>
                 Play around with the settings below</p>
                 <div>
+                    <span title="Only show the minimap when scrolling and when hovering it">
+                        <input type="checkbox" id="autohide-button" name="xivmap-autohide">
+                        <label for="autohide-button">Autohide</label>
+                    </span>
+
+                    <span title="Shrinks the body to make space dedicated to the minimap">
+                        <input type="checkbox" id="docked-mode-button" name="xivmap-docked-mode">
+                        <label for="docked-mode-button">Docked</label>
+                    </span>
+
+                    <span title="Show the actual text instead of the whole box for Paragraphs and Heading tags">
+                        <input type="checkbox" id="accurate-text-button" name="xivmap-accurate-text" checked>
+                        <label for="accurate-text-button">Accurate text</label>
+                    </span>
+
+                    <hr>
+
                     <input type="radio" id="tl-button" name="xivmap-location" data-position="top-left">
                     <label for="tl-button">Top left</label>
                     <input type="radio" id="l-button" name="xivmap-location" data-position="left">
@@ -42,15 +60,18 @@
                     <input type="radio" id="none-button" name="xivmap-animation" data-animation="">
                     <label for="none-button">No animation</label>
 
-                    <hr>
                 </div>
 
-                <ul class="actions">
+                <!--<ul class="actions">
                     <li><a href="#" class="button special icon fa-download">Download</a></li>
                     <li><a href="#one" class="button icon fa-chevron-down scrolly">Learn More</a></li>
-                </ul>
+                </ul>-->
             </div>
-            <div class="image phone"><div class="inner"><img src="images/screen.jpg" alt="" /></div></div>
+            <div class="image phone include-in-xivmap">
+                <div class="inner" style="background-image: url(images/bg.jpg)">
+                    <!--<img src="images/screen.jpg" alt="" />-->
+                </div>
+            </div>
         </header>
 
         <!-- One -->
@@ -442,10 +463,10 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
                 <li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
                 <li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
             </ul>
-            <p class="copyright">Demo page by <a href="https://twitter.com/n33co">@n33co</a></p>
+            <p class="copyright">Modified for Xivmap. Base template by <a href="https://twitter.com/n33co">@n33co</a></p>
         </footer>
 
-        <div class="xivmap right slide-in" style="height: 30px;"></div>
+        <div class="xivmap right slide-in"></div>
 
         <!-- Scripts -->
         <script src="assets/js/jquery.min.js"></script>
@@ -458,16 +479,36 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
             // This script is only for the demo
             var positionClasses = ['top-left', 'left', 'bottom-left', 'top-right', 'right', 'bottom-right'];
             var animationClasses = ['fade-in', 'slide-in'];
-            $('input[name="xivmap-location"], input[name="xivmap-animation"]').click(function() {
+            var $body = $('body');
+
+
+            $('#header input').click(function() {
                 var positionClass = $('input[name="xivmap-location"]:checked').data('position');
                 var animationClass = $('input[name="xivmap-animation"]:checked').data('animation');
+                var autohide = !!$('input[name="xivmap-autohide"]:checked').length;
+                var docked = !!$('input[name="xivmap-docked-mode"]:checked').length;
+                var accurateText = !!$('input[name="xivmap-accurate-text"]:checked').length;
+                var minimap = $('<div class="xivmap '+positionClass+' '+animationClass+'"></div>');
+
+                $body.removeClass('xivmap-docked-left xivmap-docked-right');
+                $('.xivmap-docked-wrapper').remove();
                 $('.xivmap').remove();
-                $('<div class="xivmap '+positionClass+' '+animationClass+'"></div>').appendTo('body');
-                xivmap();
+
+                if (docked) {
+                    if (positionClass === 'top-left' || positionClass === 'left' || positionClass === 'bottom-left') {
+                        $body.addClass('xivmap-docked-left');
+                    }
+                     else $body.addClass('xivmap-docked-right');
+                    var wrapper = $('<div class="xivmap-docked-wrapper"></div>').append(minimap);
+                    $body.append(wrapper);
+                }
+                else $body.append(minimap);
+
+                xivmap({autohide: autohide, accurateText: accurateText});
             });
         </script>
 
-        <script src="../../xivmap.js"></script>
+        <script src="../xivmap.js"></script>
         <script>
             // That's it!
             var map = xivmap();

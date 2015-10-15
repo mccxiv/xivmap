@@ -1,0 +1,47 @@
+/*
+    DOCKED MODE =====================================================
+
+    Apply these classes and containers to have xivmap use the
+    alternate style. The alternate style features a "docked" area
+    on the side of the page dedicated exclusively to the minimap.
+*/
+
+/* Apply one of these classes on the body tag */
+.xivmap-docked-left {margin-left: 110px;}
+.xivmap-docked-right {margin-right: 110px;}
+
+/* Apply this class to a div that wraps .xivmap */
+.xivmap-docked-wrapper {
+    top: 0;
+    width: 110px;
+    height: 100vh;
+    position: fixed;
+    background-color: #F0F0F0;
+}
+
+.xivmap-docked-left .xivmap-docked-wrapper {left: 0;}
+.xivmap-docked-right .xivmap-docked-wrapper {right: 0;}
+
+@media (max-width: 1400px) {
+    .xivmap-docked-wrapper {width: 90px;}
+    .xivmap-docked-left {margin-left: 90px;}
+    .xivmap-docked-right {margin-right: 90px;}
+}
+
+@media (max-width: 1100px) {
+    .xivmap-docked-wrapper {width: 70px;}
+    .xivmap-docked-left {margin-left: 70px;}
+    .xivmap-docked-right {margin-right: 70px;}
+}
+
+@media (max-width: 950px) {
+    .xivmap-docked-wrapper {width: 45px;}
+    .xivmap-docked-left {margin-left: 45px;}
+    .xivmap-docked-right {margin-right: 45px;}
+}
+
+@media (max-width: 850px) {
+    .xivmap-docked-wrapper {display: none;}
+    .xivmap-docked-left {margin-left: unset;}
+    .xivmap-docked-right {margin-right: unset;}
+}

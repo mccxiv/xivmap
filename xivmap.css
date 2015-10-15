@@ -32,6 +32,11 @@
 }
 
 /* These items have medium darkness*/
+
+/*  NOTE: div are not included by default! Either pass in a custom
+    array of selectors to the xivmap function, or add .include-in-xivmap class
+    to an element */
+.xivmap [data-tag="DIV"],
 .xivmap [data-tag="Q"],
 .xivmap [data-tag="IMG"],
 .xivmap [data-tag="MAP"],
@@ -69,6 +74,9 @@
     width: 70px;
     margin: 20px;
     position: fixed;
+
+    /* Useful for the autohide option */
+    transition: opacity 250ms ease-out;
 
     /* Prevent accidental text selection while dragging */
     -moz-user-select: -moz-none;
@@ -231,6 +239,10 @@
     animation-name: xivmap-fade-in-right;
 }
 
+/* UTILITY =====================*/
+.xivmap.xivmap-hidden {
+    opacity: 0;
+}
 
 /*
     RESPONSIVE ======================================================
@@ -260,34 +272,4 @@
 
 @media (max-width: 850px) {
     .xivmap {display: none;}
-}
-
-
-/*
-    DOCKED MODE =====================================================
-
-    Apply these classes and containers to have xivmap use the
-    alternate style. The alternate style features a "docked" area
-    on the side of the page dedicated exclusively to the minimap.
-*/
-
-.xivmap-body-padding {
-    margin-right: 100px;
-}
-
-.xivmap-container {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 110px;
-    height: 100vh;
-    z-index: 100;
-    background-color: #ebebeb;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.xivmap-container .xivmap {
-    position: relative;
 }

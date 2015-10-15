@@ -3770,6 +3770,13 @@
 			#header .image.phone {
 				box-shadow: none;
 			}
+                #header .image.phone .inner {
+                    height: 396px;
+                    width: 277px;
+                    background-size: cover;
+                    background-position-x: center;
+                    background-clip: padding-box;
+                }
 
 				#header .image.phone .inner, #header .image.phone:before, #header .image.phone:after {
 					border-color: rgba(255, 255, 255, 0.25);
