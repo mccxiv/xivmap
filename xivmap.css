@@ -32,11 +32,6 @@
 }
 
 /* These items have medium darkness*/
-
-/*  NOTE: div are not included by default! Either pass in a custom
-    array of selectors to the xivmap function, or add .include-in-xivmap class
-    to an element */
-.xivmap [data-tag="DIV"],
 .xivmap [data-tag="Q"],
 .xivmap [data-tag="IMG"],
 .xivmap [data-tag="MAP"],
@@ -52,6 +47,11 @@
 }
 
 /* These items are the lightest */
+
+/*  NOTE: DIV are not included by default! Either pass in a custom
+    array of selectors or pass in the element itself or add
+    the .include-in-xivmap class to an element */
+.xivmap [data-tag="DIV"],
 .xivmap [data-tag="LI"],
 .xivmap [data-tag="TR"],
 .xivmap [data-tag="P"],
@@ -75,7 +75,7 @@
     margin: 20px;
     position: fixed;
 
-    /* Useful for the autohide option */
+    /* used by the autohide option */
     transition: opacity 250ms ease-out;
 
     /* Prevent accidental text selection while dragging */
@@ -84,11 +84,16 @@
     -ms-user-select: none;
     user-select: none;
 
-    /* Show the hand icon to indicate the viewport can be dragged */
+    /* Show the hand icon to indicate that the viewport can be dragged */
     cursor: move; /* IE doesn't support grab, this is a suitable replacement */
     cursor: -webkit-grab;
     cursor: -moz-grab;
     cursor: grab;
+}
+
+/* Used when autohide is enabled */
+.xivmap.xivmap-hidden {
+    opacity: 0;
 }
 
 /* Show the grabbing hand when holding down click */
@@ -121,10 +126,9 @@
 /*
     POSITIONING =====================================================
 
-    These classes are used to place the minimap in the correct corner or side
-    Modifying them should not be necessary: use margin instead of top/left/right/bottom
+    These classes are used to place the minimap in the correct corner or side.
+    Modifying them should not be necessary: use margin instead of top/left/right/bottom.
  */
-
 .xivmap.top-left {
     top: 0;
     left: 0;
@@ -178,9 +182,9 @@
     You may also apply your own animations, such as those from
     Animate.css found at https://daneden.github.io/animate.css/
 
-    Animations are triggered when xivmap applies the 'xivmap-animate'
-    class, which by default happens as soon as xivmap() is called.
-    This special class is then removed, after the animation completes.
+    Default animations available by adding one of these classes:
+    .fade-in
+    .slide-in
  */
 @keyframes xivmap-fade-in {
     from {opacity: 0;}
@@ -239,10 +243,10 @@
     animation-name: xivmap-fade-in-right;
 }
 
-/* UTILITY =====================*/
-.xivmap.xivmap-hidden {
-    opacity: 0;
-}
+/*
+    UTILITY =========================================================
+ */
+
 
 /*
     RESPONSIVE ======================================================
