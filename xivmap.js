@@ -13,7 +13,6 @@
  * @param {boolean} [config.autohide = false] Only shows the minimap when hovering or scrolling.
  * @param {boolean} [config.autohideDelay = 1500] Hide the minimap after this many milliseconds, when autohide is enabled.
  * @param {boolean} [config.refreshOnLoad = true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
- * @param {boolean} [config.fixedElementsAtTop = true] Draw fixed position elements at the top of the minimap, recommended.
  * @returns {{refresh: function, destroy: function}} Methods to force a re-render and to clean up listeners.
  */
 function xivmap(config) {
@@ -44,7 +43,6 @@ function xivmap(config) {
 		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
 		autohideDelay: config.hasOwnProperty('autohideDelay')? config.autohideDelay : 1500,
 		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true,
-		fixedElementsAtTop: config.hasOwnProperty('fixedElementsAtTop')? config.fixedElementsAtTop : true
 	};
 
 
