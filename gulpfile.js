@@ -5,7 +5,7 @@ var replace = require('gulp-replace');
 var runSequence = require('run-sequence');
 
 gulp.task('prep-files-gh-pages', function() {
-	return gulp.src(['demo/**', 'index.html', 'xivmap.css', 'xivmap.js'], {base: './'})
+	return gulp.src(['demo/**', 'index.html', 'xivmap.css', 'xivmap.js', 'xivmap-docked.css'], {base: './'})
 		.pipe(gulp.dest('.ghpages'));
 });
 
