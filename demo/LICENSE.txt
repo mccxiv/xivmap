@@ -1,3 +1,6 @@
+Note: the license below applies only to the files used for the demo page, not to Xivmap itself.
+----------------------------------------------------------------------------------------------
+
 Creative Commons Attribution 3.0 Unported
 http://creativecommons.org/licenses/by/3.0/
 
