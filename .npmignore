@@ -1,6 +1,7 @@
 /.idea
 /.gitignore
-/demos
+/demo
+/packaged
 /index.html
 /bower.json
 /node_modules

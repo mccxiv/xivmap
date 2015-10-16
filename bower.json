@@ -12,7 +12,8 @@
     "/.gitignore",
     "/.npmignore",
     "/index.html",
-    "/demos",
+    "/demo",
+    "/packaged",
     "/package.json",
     "/node_modules",
     "/gulpfile.js"
