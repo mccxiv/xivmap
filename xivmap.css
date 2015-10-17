@@ -111,7 +111,7 @@
     border-radius: 2px;
     width: calc(100% + 20px);
     transition: margin-top 150ms ease-out;
-    background-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.09);
     border: 1px solid rgba(255, 255, 255, .25);
 }
 

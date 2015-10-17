@@ -47,7 +47,7 @@ gulp.task('deploy-gh-pages', function(cb) {
 // For publishing a downloadable version including documentation
 // ==================================================================
 gulp.task('make-dist', function(cb) {
-	runSequence('clean-dist', ['copy-demo-dist', 'copy-xivmap-dist', 'copy-docs-dist'], cb);
+	runSequence('clean-dist', ['copy-demo-dist', 'copy-xivmap-dist', 'copy-docs-dist'], 'fix-references-dist', cb);
 });
 
 gulp.task('clean-dist', function() {
@@ -62,6 +62,14 @@ gulp.task('copy-demo-dist', function() {
 gulp.task('copy-xivmap-dist', function() {
 	return gulp.src(['xivmap.js', 'xivmap.css', 'xivmap-docked.css'])
 		.pipe(gulp.dest('dist/xivmap/'));
+});
+
+gulp.task('fix-references-dist', function() {
+	return gulp.src('dist/demo/index.html')
+		.pipe(replace('href="../xivmap.css"', 'href="../xivmap/xivmap.css"'))
+		.pipe(replace('href="../xivmap-docked.css"', 'href="../xivmap/xivmap-docked.css"'))
+		.pipe(replace('src="../xivmap.js"', 'src="../xivmap/xivmap.js"'))
+		.pipe(gulp.dest('dist/demo/'));
 });
 
 gulp.task('copy-docs-dist', function() {
