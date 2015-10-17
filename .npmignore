@@ -1,8 +1,12 @@
 /.idea
 /.gitignore
+/.gh-pages
+/dist
+/media
+/src-docs
 /demo
-/packaged
 /index.html
 /bower.json
 /node_modules
+/bower_components
 /gulpfile.js

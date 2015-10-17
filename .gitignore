@@ -1,3 +1,6 @@
 /.idea
+/.gh-pages
+/dist
 /packaged
 /node_modules
+/bower_components

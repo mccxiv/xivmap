@@ -487,7 +487,7 @@ xivmap.accurateTextTags = function() {
 /**
  * If jQuery is available, add xivmap as a plugin
  */
-if (jQuery) {
+if (typeof jQuery === 'function') {
 	jQuery.fn.xivmap = function(config) {
 		config = config || {};
 		config.minimap = config.minimap || this.get(0);
