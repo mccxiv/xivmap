@@ -468,7 +468,7 @@ function xivmap(config) {
 xivmap.selectors = function() {
 	return [
 		'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'input', 'button', 'label',
-		'q', 'img', 'map', 'object', 'audio', 'video', 'iframe', 'code', 'textarea',
+		'q', 'img', 'map', 'object', 'audio', 'video', 'iframe', 'textarea', 'code',
 		'li', 'tr', 'form', 'blockquote', 'address',
 		'p', 'pre', '.include-in-xivmap'
 	];
@@ -481,7 +481,7 @@ xivmap.selectors = function() {
  * @returns {string[]}
  */
 xivmap.accurateTextTags = function() {
-	return ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P'];
+	return ['H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'P', 'TEXTAREA', 'CODE'];
 };
 
 /**

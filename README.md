@@ -207,7 +207,7 @@ Note: tag names must be capitalized, as per the JavaScript DOM api.
 ```
 
 # License
-© 2015 Andrea Stella
+Â© 2015 Andrea Stella
 
 Unfortunately, this is not free software.  
 The source code is made available for educational purposes and for non commercial use.

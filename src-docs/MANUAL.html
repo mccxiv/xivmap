@@ -14,6 +14,15 @@
             .rendered {
                 width: 700px;
                 margin: auto;
+                padding-bottom: 200px;
+            }
+
+            h1, h2 {
+                margin-top: 90px;
+            }
+
+            .xivmap [data-tag="PRE"] {
+                background-color: #e5e5e5;
             }
         </style>
     </head>
@@ -39,6 +48,6 @@
             hljs.initHighlightingOnLoad();
         </script>
 
-        <script> xivmap() </script>
+        <script> xivmap({accurateText: true}); </script>
     </body>
 </html>
