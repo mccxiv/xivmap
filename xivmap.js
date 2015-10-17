@@ -97,8 +97,6 @@ function xivmap(config) {
 	function updateDom() {
 		var ratio = o.minimap.offsetWidth / document.body.offsetWidth;
 		var elements = uniq(mergeElementLists(o.context.querySelectorAll(o.selectors), o.elements));
-		console.log('result', elements.length);
-		console.log(o.context.querySelectorAll(o.selectors).length);
 		o.minimap.style.height = document.body.offsetHeight * ratio + 'px';
 		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"><div></div></div>';
 		var html = '';
