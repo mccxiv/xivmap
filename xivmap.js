@@ -12,6 +12,7 @@
  * @param {boolean} [config.renderNoOpacity = false] Whether to show elements with opacity: 0
  * @param {boolean} [config.autohide = false] Only shows the minimap when hovering or scrolling.
  * @param {boolean} [config.autohideDelay = 1500] Hide the minimap after this many milliseconds, when autohide is enabled.
+ * @param {boolean} [config.roundingFn = Math.round] The rounding function used to calculate pixel positions.
  * @param {boolean} [config.refreshOnLoad = true] By default, xivmap will refresh itself upon hearing the window's load event, change to disable.
  * @returns {{refresh: function, destroy: function}} Methods to force a re-render and to clean up listeners.
  */
@@ -36,13 +37,14 @@ function xivmap(config) {
 		minimap: toEl(config.minimap) || document.querySelector('.xivmap'),
 		selectors: config.selectors || xivmap.selectors(),
 		context: toEl(config.context) || document.body,
-		elements: config.elements || [],
+		elements: toEl(config.elements) || [],
 		accurateText: config.hasOwnProperty('accurateText')? config.accurateText : true,
 		accurateTextTags: config.accurateTextTags || xivmap.accurateTextTags(),
 		renderNoOpacity: config.hasOwnProperty('renderNoOpacity')? config.renderNoOpacity : false,
 		autohide: config.hasOwnProperty('autohide')? config.autohide : false,
 		autohideDelay: config.hasOwnProperty('autohideDelay')? config.autohideDelay : 1500,
-		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true,
+		roundingFn: config.roundingFn || Math.round,
+		refreshOnLoad: config.hasOwnProperty('refreshOnLoad')? config.refreshOnLoad : true
 	};
 
 
@@ -255,7 +257,7 @@ function xivmap(config) {
 		return '<div '+style+' '+tag+'></div>';
 
 		function r(number) {
-			return Math.round(number);
+			return o.roundingFn(number);
 		}
 	}
 
@@ -311,11 +313,18 @@ function xivmap(config) {
 	/**
 	 * Convert selector to element, if necessary
 	 *
-	 * @param {string | HTMLElement} selector
-	 * @returns {HTMLElement}
+	 * @param {string | HTMLElement | string[] | HTMLElement[] | jQuery | NodeList} selector
+	 * @returns {HTMLElement | HTMLElement[]}
 	 */
 	function toEl(selector) {
-		return typeof selector === 'string'? document.querySelector(selector) : selector;
+		if (!selector || !selector.length) return singleToElement(selector);
+		else return Array.prototype.map.call(selector, singleToElement);
+
+		function singleToElement(sel) {
+			if (typeof sel === 'string') return document.querySelector(sel);
+			if (sel && sel.get === 'function') return sel.get(0);
+			return sel;
+		}
 	}
 
 	/**
@@ -334,9 +343,9 @@ function xivmap(config) {
 	 *
 	 * @param {HTMLElement} element
 	 * @param {object} [exceptions]
-	 * @param {boolean} [exceptions.display = false] True means "Show elements with display: none"
-	 * @param {boolean} [exceptions.visibility = false] True means "Show elements visibility: hidden"
-	 * @param {boolean} [exceptions.opacity = false] True means "Show elements with opacity: 0"
+	 * @param {boolean} [exceptions.display = false] Return true for elements with or inside of display: none?
+	 * @param {boolean} [exceptions.visibility = false] Return true for elements with or inside of visibility: hidden?
+	 * @param {boolean} [exceptions.opacity = false] Return true for elements with or inside of opacity: 0?
 	 * @returns {boolean}
 	 */
 	function isElementVisible(element, exceptions) {

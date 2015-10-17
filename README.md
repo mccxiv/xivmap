@@ -189,6 +189,9 @@ xivmap({
 
   // When autohide is on, hide the minimap after this many milliseconds
   autohideDelay: 1500,
+  
+  // A function used for pixel rounding
+  roundingFn: Math.round
 
   // Refresh itself on the window's load event so that images are included properly.
   refreshOnLoad: true
