@@ -74,7 +74,7 @@ Let's add Xivmap to this example page:
 </html>
 ```
 
-1. Include the required files. Copy the xivmap folder to the same place where your html file is located.  
+- Include the required files. Copy the xivmap folder to the same place where your html file is located.  
 CSS should go inside `<head>` and the JavaScript file should be near the end of the page, before the closing `</body>` tag.
 ```html
 <html>
@@ -92,7 +92,7 @@ CSS should go inside `<head>` and the JavaScript file should be near the end of 
 </html>
 ```
 
-2. Add a container for Xivmap to use, as well as classes for the animation and position on the page. See the Classes section for a complete list of available classes. Make sure the container div comes before the xivmap script.
+- Add a container for Xivmap to use, as well as classes for the animation and position on the page. See the Classes section for a complete list of available classes. Make sure the container div comes before the xivmap script.
 ```html
 <html>
   <head>
@@ -110,7 +110,7 @@ CSS should go inside `<head>` and the JavaScript file should be near the end of 
 </html>
 ```
 
-3. Add a script that calls the `xivmap()` function to render the minimap.
+- Add a script that calls the `xivmap()` function to render the minimap.
 ```html
 <html>
   <head>
