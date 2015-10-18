@@ -120,6 +120,7 @@ color: #F0F7FF;
     top: 44px;
     left: -22px;
     padding-top: 2px;
+    box-shadow: 0 0px 5px rgba(0,0,0,0.19), 0 0px 6px rgba(0,0,0,0.23);
 }
 
 .thumbnail img {
@@ -139,6 +140,7 @@ left: 18px;
 left: 9px;
 top: 12px;
 font-size: 28px;
+text-shadow: 0px 1px 0px rgba(93, 93, 93, 0.29);
 }
 
 .thumbnail .fa-css3 {
