@@ -11,7 +11,8 @@ body{
 }
 
 body > div {
-    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
     overflow: hidden;
     border: 1px solid gray;
     margin-top: 200px;
@@ -87,8 +88,61 @@ right: 15px;
 }
 
 .image-preview .list {
-/* background-color: #424242; */
-color: #C7C7C7;
-margin-top: 37px;
-color: #F0F7FF;
+
+/* background-color: #424242; */
+
+color: #C7C7C7;
+
+margin-top: 37px;
+
+color: #F0F7FF;
 }
+
+.thumbnail {
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+
+.thumbnail * {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.thumbnail h1 {
+    padding: 30px;
+    background-image: url(random_grey_variations.png);
+    font-family: 'Josefin Sans', sans-serif;
+    color: white;
+    transform: rotate(9deg);
+    font-size: 15px;
+    top: 44px;
+    left: -22px;
+    padding-top: 2px;
+}
+
+.thumbnail img {
+
+top: -142px;
+
+width: 60px;
+
+left: 18px;
+}
+
+.thumbnail i {
+    color: #F16529;
+}
+
+.thumbnail .fa-html5 {
+left: 9px;
+top: 12px;
+font-size: 28px;
+}
+
+.thumbnail .fa-css3 {
+top: 21px;
+left: 10px;
+display: none;
+}
