@@ -1,6 +1,6 @@
 # A minimap for websites, a la Sublime Text
 
-![](media/xivmap-demo.gif)
+![](promo-stuff/xivmap-demo.gif)
 
 Let's jump right in with an example:
 

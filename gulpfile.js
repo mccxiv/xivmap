@@ -75,7 +75,7 @@ gulp.task('fix-references-dist', function() {
 gulp.task('copy-docs-dist', function() {
 	var assets = useref.assets({noconcat: true});
 	return gulp.src('src-docs/MANUAL.html')
-		.pipe(replace('{{markdown}}', escape(fs.readFileSync('README.md', {encoding: 'utf8'}).replace('![](media/xivmap-demo.gif)', ''))))
+		.pipe(replace('{{markdown}}', escape(fs.readFileSync('README.md', {encoding: 'utf8'}).replace('![](promo-stuff/xivmap-demo.gif)', ''))))
 		.pipe(assets)
 		.pipe(gulpif('*.js', concat('assets/docs.min.js')))
 		.pipe(gulpif('*.js', uglify({output: {max_line_len: 200}})))
