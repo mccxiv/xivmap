@@ -33,6 +33,7 @@ body > div {
     text-align: left;
     padding-left: 57px;
     transform: rotate(10deg);
+    /* color: white; */
 }
 
 .image-preview h1 {
@@ -64,14 +65,15 @@ margin-top: -33px;
 .image-preview .bg2 {
      background-color: #424242;
      position: absolute;
+     background-image: url(random_grey_variations.png);
      height: 135%;
-     width: 108%;
-     top: 145px;
-     z-index: -1;
-     left: -232px;
+     width: 110%;
+     top: 135px;
+     /* color: white; */
+     border-radius: 6px;
+     z-index: -2;
+     left: -280px;
      transform: rotate(10deg);
-     border-radius: 7px;
-     /* box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); */
      box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
 }
 
@@ -88,4 +90,5 @@ right: 15px;
 /* background-color: #424242; */
 color: #C7C7C7;
 margin-top: 37px;
+color: #F0F7FF;
 }
