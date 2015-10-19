@@ -35,6 +35,11 @@ Xivmap is composed of three files:
 - `xivmap.css`
 - `xivmap-docked.css` (optional)
 
+Minified files are also provided, they should be used if you don't have a build process set up
+- `xivmap.min.js`
+- `xivmap.min.css`
+- `xivmap-docked.min.css` (optional)
+
 To use Xivmap, you need to add four things to your page: the two required files, a container for xivmap to use, and a line of JavaScript to start it up.
 
 ## CSS Classes
@@ -46,6 +51,10 @@ You should add one of the positioning classes to your xivmap container, one anim
 
 ###### Animation classes
 `slide-in`, `fade-in`
+
+## jQuery version
+Xivmap uses a hybrid model, both the jQuery and vanilla JavaScript versions are available in the same file. If jQuery is detected as being available, Xivmap will add its function to it.  
+For the examples on this page, simply replace the calls to `xivmap()` with `$('.xvmap').xivmap()`
 
 
 ## Short Instructions
@@ -68,7 +77,7 @@ Let's add Xivmap to this example page:
     <script src="js/my-script.js"></script>
   </head>
   <body>
-    <h1>Example header<h1>
+    <h1>Example header</h1>
     <p>Sample content</p>
   </body>
 </html>
@@ -85,7 +94,7 @@ CSS should go inside `<head>` and the JavaScript file should be near the end of 
     <script src="js/my-script.js"></script>
   </head>
   <body>
-    <h1>Example header<h1>
+    <h1>Example header</h1>
     <p>Sample content</p>
     <script src="xivmap/xivmap.js"></script> <!-- XIVMAP'S JAVASCRIPT -->
   </body>
@@ -102,7 +111,7 @@ CSS should go inside `<head>` and the JavaScript file should be near the end of 
     <script src="js/my-script.js"></script>
   </head>
   <body>
-    <h1>Example header<h1>
+    <h1>Example header</h1>
     <p>Sample content</p>
     <div class="xivmap top-right slide-in"></div> <!-- XIVMAP'S CONTAINER -->
     <script src="xivmap/xivmap.js"></script>
@@ -113,20 +122,20 @@ CSS should go inside `<head>` and the JavaScript file should be near the end of 
 - Add a script that calls the `xivmap()` function to render the minimap.
 ```html
 <html>
-  <head>
-    <title>My Website</title>
-    <link rel="stylesheet" href="xivmap/xivmap.css">
-    <link rel="stylesheet" href="css/my-styles.css">
-    <script src="js/my-script.js"></script>
-  </head>
-  <body>
-    <h1>Example header<h1>
-    <p>Sample content</p>
-    <div class="xivmap top-right slide-in"></div>
-    <script src="xivmap/xivmap.js"></script>
-    <script> xivmap(); </script> <!-- START XIVMAP! -->
-  </body>
-</html>
+         <head>
+           <title>My Website</title>
+           <link rel="stylesheet" href="xivmap/xivmap.css">
+           <link rel="stylesheet" href="css/my-styles.css">
+           <script src="js/my-script.js"></script>
+         </head>
+         <body>
+           <h1>Example header</h1>
+           <p>Sample content</p>
+           <div class="xivmap top-right slide-in"></div>
+           <script src="xivmap/xivmap.js"></script>
+           <script> xivmap(); </script> <!-- START XIVMAP! -->
+         </body>
+       </html>
 ```
 
 ## Using Docked Mode
