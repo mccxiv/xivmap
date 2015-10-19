@@ -67,7 +67,7 @@ gulp.task('copy-standalone-demo', function() {
 });
 
 gulp.task('copy-xivmap-standalone-demo', function() {
-	gulp.src('dist/packaged/xivmap/**')
+	gulp.src('dist/xivmap/xivmap/**')
 		.pipe(gulp.dest('dist/demo-standalone/xivmap/'))
 });
 
@@ -85,12 +85,12 @@ gulp.task('clean', function() {
 
 gulp.task('copy-demo', function() {
 	return gulp.src('demo/**')
-		.pipe(gulp.dest('dist/packaged/demo/'));
+		.pipe(gulp.dest('dist/xivmap/demo/'));
 });
 
 gulp.task('copy-xivmap', function() {
 	return gulp.src(['xivmap.js', 'xivmap.css', 'xivmap-docked.css'])
-		.pipe(gulp.dest('dist/packaged/xivmap/'));
+		.pipe(gulp.dest('dist/xivmap/xivmap/'));
 });
 
 gulp.task('copy-docs', function() {
@@ -107,39 +107,39 @@ gulp.task('copy-docs', function() {
 		.pipe(gulpif('*.css', minifyCss()))
 		.pipe(assets.restore())
 		.pipe(useref())
-		.pipe(gulp.dest('dist/packaged/documentation'));
+		.pipe(gulp.dest('dist/xivmap/documentation'));
 });
 
 gulp.task('copy-ty-note', function() {
 	return gulp.src('marketing/thank-you-note/thanks.html')
-		.pipe(gulp.dest('dist/packaged/'));
+		.pipe(gulp.dest('dist/xivmap/'));
 });
 
 gulp.task('minify-js', function() {
-	return gulp.src('dist/packaged/xivmap/xivmap.js')
+	return gulp.src('dist/xivmap/xivmap/xivmap.js')
 		.pipe(rename('xivmap.min.js'))
 		.pipe(uglify())
-		.pipe(gulp.dest('dist/packaged/xivmap/'));
+		.pipe(gulp.dest('dist/xivmap/xivmap/'));
 });
 
 gulp.task('minify-css', function() {
-	gulp.src('dist/packaged/xivmap/xivmap.css')
+	gulp.src('dist/xivmap/xivmap/xivmap.css')
 		.pipe(rename('xivmap.min.css'))
 		.pipe(minifyCss())
-		.pipe(gulp.dest('dist/packaged/xivmap/'));
+		.pipe(gulp.dest('dist/xivmap/xivmap/'));
 });
 
 gulp.task('minify-docked-css', function() {
-	return gulp.src('dist/packaged/xivmap/xivmap-docked.css')
+	return gulp.src('dist/xivmap/xivmap/xivmap-docked.css')
 		.pipe(rename('xivmap-docked.min.css'))
 		.pipe(minifyCss())
-		.pipe(gulp.dest('dist/packaged/xivmap/'));
+		.pipe(gulp.dest('dist/xivmap/xivmap/'));
 });
 
 gulp.task('fix-references', function() {
-	return gulp.src('dist/packaged/demo/index.html')
+	return gulp.src('dist/xivmap/demo/index.html')
 		.pipe(replace('href="../xivmap.css"', 'href="../xivmap/xivmap.min.css"'))
 		.pipe(replace('href="../xivmap-docked.css"', 'href="../xivmap/xivmap-docked.min.css"'))
 		.pipe(replace('src="../xivmap.js"', 'src="../xivmap/xivmap.min.js"'))
-		.pipe(gulp.dest('dist/packaged/demo/'));
+		.pipe(gulp.dest('dist/xivmap/demo/'));
 });
