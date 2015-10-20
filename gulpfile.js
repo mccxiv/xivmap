@@ -63,7 +63,7 @@ gulp.task('copy-xivmap', function() {
 
 gulp.task('copy-docs', function() {
 	var readme = escape(fs.readFileSync('README.md', {encoding: 'utf8'}));
-	readme = readme.replace('![](publishing-material/xivmap-demo.gif)', '');
+	readme = readme.replace('![](publishing-material/media/xivmap-demo.gif)', '');
 	readme = readme.split('# License')[0];
 	var assets = useref.assets({noconcat: true});
 	return gulp.src('publishing-material/documentation-source-files/MANUAL.html')
