@@ -1,8 +1,8 @@
 var fs = require('fs');
 var del = require('del');
+var zip = require('gulp-zip');
 var gulp = require('gulp');
 var escape = require('escape-html');
-var ghPages = require('gh-pages');
 var useref = require('gulp-useref');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
@@ -13,79 +13,47 @@ var replace = require('gulp-replace');
 var runSequence = require('run-sequence');
 
 // ==================================================================
-// For publishing to GitHub Pages
-// ==================================================================
-gulp.task('make-gh-pages', function(cb) {
-	runSequence('clean-gh-pages', 'prep-files-gh-pages', 'fix-references-gh-pages', cb);
-});
-
-gulp.task('publish-gh-pages', function(cb) {
-	runSequence('make-gh-pages', 'deploy-gh-pages', 'clean-gh-pages', cb);
-});
-
-gulp.task('clean-gh-pages', function() {
-	return del('.gh-pages/');
-});
-
-gulp.task('prep-files-gh-pages', function() {
-	return gulp.src(['demo/**', 'xivmap.css', 'xivmap.js', 'xivmap-docked.css'])
-		.pipe(gulp.dest('.gh-pages/'));
-});
-
-gulp.task('fix-references-gh-pages', function() {
-	return gulp.src('.gh-pages/index.html')
-		.pipe(replace('href="../xivmap.css"', 'href="xivmap.css"'))
-		.pipe(replace('href="../xivmap-docked.css"', 'href="xivmap-docked.css"'))
-		.pipe(replace('src="../xivmap.js"', 'src="xivmap.js"'))
-		.pipe(gulp.dest('.gh-pages/'));
-});
-
-gulp.task('deploy-gh-pages', function(cb) {
-	ghPages.publish('.gh-pages/', cb);
-});
-
-// ==================================================================
 // For publishing a downloadable version including documentation
 // ==================================================================
 gulp.task('make-dist', function(cb) {
 	runSequence(
 		'clean',
-		['copy-demo', 'copy-xivmap', 'copy-docs', 'copy-ty-note'],
-		['minify-js', 'minify-css', 'minify-docked-css'],
-		['fix-references', 'make-standalone-demo'],
+		'make-package',
+		'make-standalone-demo',
+		'clean-folders',
 		cb
 	);
 });
 
-gulp.task('make-standalone-demo', function(cb) {
-	runSequence(['copy-standalone-demo', 'copy-xivmap-standalone-demo'], 'fix-standalone-demo-references', cb);
+gulp.task('make-package', function(cb) {
+	runSequence(['copy-xivmap', 'copy-docs', 'copy-ty-note'], ['minify-js', 'minify-css', 'minify-docked-css'], 'zip-package', cb)
 });
+
+gulp.task('make-standalone-demo', function(cb) {
+	runSequence(['copy-standalone-demo', 'copy-xivmap-standalone-demo'], 'fix-standalone-demo-references', 'zip-standalone-demo', cb);
+});
+
 
 gulp.task('copy-standalone-demo', function() {
 	return gulp.src('demo/**')
-		.pipe(gulp.dest('dist/demo-standalone/'));
+		.pipe(gulp.dest('dist/standalone-demo/'));
 });
 
 gulp.task('copy-xivmap-standalone-demo', function() {
 	gulp.src('dist/xivmap/xivmap/**')
-		.pipe(gulp.dest('dist/demo-standalone/xivmap/'))
+		.pipe(gulp.dest('dist/standalone-demo/xivmap/'))
 });
 
 gulp.task('fix-standalone-demo-references', function() {
-	return gulp.src('dist/demo-standalone/index.html')
+	return gulp.src('dist/standalone-demo/index.html')
 		.pipe(replace('href="../xivmap.css"', 'href="xivmap/xivmap.min.css"'))
 		.pipe(replace('href="../xivmap-docked.css"', 'href="xivmap/xivmap-docked.min.css"'))
 		.pipe(replace('src="../xivmap.js"', 'src="xivmap/xivmap.min.js"'))
-		.pipe(gulp.dest('dist/demo-standalone/'));
+		.pipe(gulp.dest('dist/standalone-demo/'));
 });
 
 gulp.task('clean', function() {
 	return del('dist/');
-});
-
-gulp.task('copy-demo', function() {
-	return gulp.src('demo/**')
-		.pipe(gulp.dest('dist/xivmap/demo/'));
 });
 
 gulp.task('copy-xivmap', function() {
@@ -136,10 +104,18 @@ gulp.task('minify-docked-css', function() {
 		.pipe(gulp.dest('dist/xivmap/xivmap/'));
 });
 
-gulp.task('fix-references', function() {
-	return gulp.src('dist/xivmap/demo/index.html')
-		.pipe(replace('href="../xivmap.css"', 'href="../xivmap/xivmap.min.css"'))
-		.pipe(replace('href="../xivmap-docked.css"', 'href="../xivmap/xivmap-docked.min.css"'))
-		.pipe(replace('src="../xivmap.js"', 'src="../xivmap/xivmap.min.js"'))
-		.pipe(gulp.dest('dist/xivmap/demo/'));
+gulp.task('zip-package', function () {
+	return gulp.src(['dist/**', '!dist/standalone-demo', '!dist/standalone-demo/**', '!dist/standalone-demo.zip'])
+		.pipe(zip('xivmap.zip'))
+		.pipe(gulp.dest('dist/'));
+});
+
+gulp.task('zip-standalone-demo', function () {
+	return gulp.src('dist/standalone-demo/**/*')
+		.pipe(zip('standalone-demo.zip'))
+		.pipe(gulp.dest('dist/'));
+});
+
+gulp.task('clean-folders', function() {
+	return del(['dist/standalone-demo', 'dist/xivmap']);
 });
