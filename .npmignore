@@ -2,8 +2,7 @@
 /.gitignore
 /.gh-pages
 /dist
-/marketing
-/src-docs
+/publishing-material
 /demo
 /index.html
 /bower.json

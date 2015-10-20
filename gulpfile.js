@@ -63,10 +63,10 @@ gulp.task('copy-xivmap', function() {
 
 gulp.task('copy-docs', function() {
 	var readme = escape(fs.readFileSync('README.md', {encoding: 'utf8'}));
-	readme = readme.replace('![](marketing/xivmap-demo.gif)', '');
+	readme = readme.replace('![](publishing-material/xivmap-demo.gif)', '');
 	readme = readme.split('# License')[0];
 	var assets = useref.assets({noconcat: true});
-	return gulp.src('src-docs/MANUAL.html')
+	return gulp.src('publishing-material/documentation-source-files/MANUAL.html')
 		.pipe(replace('{{markdown}}', readme))
 		.pipe(assets)
 		.pipe(gulpif('*.js', concat('assets/docs.min.js')))
@@ -79,7 +79,7 @@ gulp.task('copy-docs', function() {
 });
 
 gulp.task('copy-ty-note', function() {
-	return gulp.src('marketing/thank-you-note/thanks.html')
+	return gulp.src('publishing-material/thank-you-note/thanks.html')
 		.pipe(gulp.dest('dist/xivmap/'));
 });
 
