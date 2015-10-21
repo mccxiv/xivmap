@@ -2,6 +2,8 @@
 
 ![](publishing-material/media/xivmap-demo.gif)
 
+For a live demo please refer to [this page](http://codecanyon.net/item/xivmap-website-minimap-jquery-vanilla-js/full_screen_preview/13341416).
+
 Let's jump right in with an example:
 
 ```html
