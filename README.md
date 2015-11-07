@@ -224,4 +224,7 @@ Note: tag names must be capitalized, as per the JavaScript DOM api.
 © 2015 Andrea Stella
 
 Unfortunately, this is not free software.  
-The source code is made available for educational purposes and for non commercial use.
+The source code is made available for educational purposes only.  
+You may [purchase a Xivmap license at Codecanyon](http://codecanyon.net/item/xivmap-website-minimap-jquery-vanilla-js/13341416)
+
+Thank you for your support :smile:
