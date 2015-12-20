@@ -124,20 +124,20 @@ CSS should go inside `<head>` and the JavaScript file should be near the end of 
 - Add a script that calls the `xivmap()` function to render the minimap.
 ```html
 <html>
-         <head>
-           <title>My Website</title>
-           <link rel="stylesheet" href="xivmap/xivmap.css">
-           <link rel="stylesheet" href="css/my-styles.css">
-           <script src="js/my-script.js"></script>
-         </head>
-         <body>
-           <h1>Example header</h1>
-           <p>Sample content</p>
-           <div class="xivmap top-right slide-in"></div>
-           <script src="xivmap/xivmap.js"></script>
-           <script> xivmap(); </script> <!-- START XIVMAP! -->
-         </body>
-       </html>
+  <head>
+    <title>My Website</title>
+    <link rel="stylesheet" href="xivmap/xivmap.css">
+    <link rel="stylesheet" href="css/my-styles.css">
+    <script src="js/my-script.js"></script>
+  </head>
+  <body>
+    <h1>Example header</h1>
+    <p>Sample content</p>
+    <div class="xivmap top-right slide-in"></div>
+    <script src="xivmap/xivmap.js"></script>
+    <script> xivmap(); </script> <!-- START XIVMAP! -->
+  </body>
+</html>
 ```
 
 ## Using Docked Mode
