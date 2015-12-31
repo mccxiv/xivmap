@@ -258,7 +258,13 @@
     RESPONSIVE ======================================================
 
     By default, smaller screens have a smaller minimaps, and tiny
-    screens under 1000px don't display a minimap at all.
+    screens under 850px don't display a minimap at all.
+
+    For more information see the "CSS width" and "CSS height"
+    columns on this website http://mydevice.io/devices/
+
+    850px minimum means that by default, Xivmap shows up on most tablets in
+    landscape mode but not in portrait mode. It does not show up on any phone.
  */
 @media (max-width: 1400px) {
     .xivmap {width: 50px;}

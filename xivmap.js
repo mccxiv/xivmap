@@ -113,11 +113,13 @@ function xivmap(config) {
 		var viewport = '<div class="xivmap-viewport" style="position: absolute; top: 0"><div></div></div>';
 		var html = '';
 		for (var i = 0; i < elements.length; i++) {
-			if (isElementVisible(elements[i], {opacity: o.renderNoOpacity})) {
-				if (o.accurateText && contains(o.accurateTextTags, elements[i].tagName)) {
-					html += makeAccurateRectangle(elements[i], ratio);
+			var el = elements[i];
+			// Exclude fixed elements and invisible elements from the minimap
+			if (!isElementFixed(el) && isElementVisible(el, {opacity: o.renderNoOpacity})) {
+				if (o.accurateText && contains(o.accurateTextTags, el.tagName)) {
+					html += makeAccurateRectangle(el, ratio);
 				}
-				else html += makeRectangle(elements[i], ratio);
+				else html += makeRectangle(el, ratio);
 			}
 		}
 		html += viewport;
@@ -353,6 +355,22 @@ function xivmap(config) {
 	 */
 	function mouseDistanceFromTopOfTarget(e) {
 		return e.pageY - position(e.currentTarget).top;
+	}
+
+	/**
+	 * Returns true if an element or any of its ancestors has its CSS
+	 * position set to fixed.
+	 *
+	 * @param {HTMLElement} element
+	 * @returns {boolean}
+	 */
+	function isElementFixed(element) {
+		while (element) {
+			var styles = getComputedStyle(element);
+			if (styles.getPropertyValue('position') === 'fixed') return true;
+			element = element.parentElement;
+		}
+		return false;
 	}
 
 	/**
