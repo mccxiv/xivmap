@@ -60,7 +60,7 @@ function xivmap(config) {
 	if (o.autohide) autohideOnLoad();
 
 	return {
-		refresh: render,
+		refresh: refresh,
 		destroy: destroy
 	};
 
@@ -73,6 +73,16 @@ function xivmap(config) {
 		updateDom();
 		resizeViewport();
 		updateViewport();
+	}
+
+	function refresh() {
+		disableTransitions();
+		render();
+
+		// Using a timeout because otherwise the browser can condense these
+		// statements into one operation (so adding and removing a class would
+		// be the same as if it was never added in the first place).
+		setTimeout(enableTransitions, 0);
 	}
 
 	function attachListeners() {
@@ -120,7 +130,7 @@ function xivmap(config) {
 	 */
 	function refreshOnPageLoad() {
 		if (document.readyState !== 'complete') {
-			once(window, 'load', render);
+			once(window, 'load', refresh);
 		}
 	}
 
@@ -193,6 +203,14 @@ function xivmap(config) {
 		var viewport = o.minimap.querySelector('.xivmap-viewport');
 		var centeredDistance = distance - viewport.offsetHeight / 2;
 		window.scrollTo(0, centeredDistance / ratio);
+	}
+
+	function disableTransitions() {
+		o.minimap.classList.add('xivmap-no-transition');
+	}
+
+	function enableTransitions() {
+		o.minimap.classList.remove('xivmap-no-transition');
 	}
 
 	/**
@@ -350,7 +368,7 @@ function xivmap(config) {
 	 */
 	function isElementVisible(element, exceptions) {
 		exceptions = exceptions || {};
-		var currentElement = element.parentElement;
+		var currentElement = element;
 		while(currentElement) {
 			var styles = getComputedStyle(currentElement);
 			if (styles.getPropertyValue('overflow') !== 'visible' && !isInside(element, currentElement)) return false;

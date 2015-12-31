@@ -115,6 +115,12 @@
     border: 1px solid rgba(255, 255, 255, .25);
 }
 
+/* Temporarily applied when calling .refresh() to prevent the viewport
+   indicator from needlessly animating */
+.xivmap.xivmap-no-transition .xivmap-viewport{
+    transition: none !important;
+}
+
 /* This makes the viewport box more visible on dark websites */
 .xivmap .xivmap-viewport > div {
     width: 100%;
