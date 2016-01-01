@@ -1,6 +1,6 @@
 {
   "name": "xivmap",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Minimap for websites, a la Sublime Text. Available as jQuery or Vanilla JS.",
   "author": "Andrea Stella <adr.stella@gmail.com> (http://mccxiv.me)",
   "repository": {
