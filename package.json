@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "xivmap",
   "version": "1.1.1",
   "description": "Minimap for websites, a la Sublime Text. Available as jQuery or Vanilla JS.",
